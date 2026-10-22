@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "cheecky",
+	"version": "${version}",
+	"name": "Cheecky Client",
+	"description": "Utility-Client für Singleplayer und Server, die das erlauben.",
+	"authors": ["ben"],
+	"license": "All-Rights-Reserved",
+	"icon": "assets/cheecky/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["dev.cheecky.Cheecky"]
+	},
+	"mixins": ["cheecky.mixins.json"],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

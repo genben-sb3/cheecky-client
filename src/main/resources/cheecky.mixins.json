@@ -1,0 +1,22 @@
+{
+	"required": true,
+	"package": "dev.cheecky.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"AltModelBlockRendererImplMixin",
+		"BlockEntityRenderDispatcherMixin",
+		"BlockStateBaseMixin",
+		"CameraMixin",
+		"ClientPacketListenerMixin",
+		"FluidRendererMixin",
+		"KeyboardHandlerMixin",
+		"ModelBlockRendererMixin",
+		"OptionInstanceAccessor"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
