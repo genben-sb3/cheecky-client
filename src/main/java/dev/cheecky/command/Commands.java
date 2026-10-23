@@ -17,6 +17,7 @@ import dev.cheecky.setting.CheckboxSetting;
 import dev.cheecky.setting.ModeSetting;
 import dev.cheecky.setting.Setting;
 import dev.cheecky.modules.BlockFinder;
+import dev.cheecky.modules.PearlAim;
 import dev.cheecky.setting.SliderSetting;
 import dev.cheecky.util.BaritoneBridge;
 import dev.cheecky.util.BlockTarget;
@@ -26,6 +27,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 /** Chat-Befehle, die mit "." beginnen. Sie werden lokal ausgeführt und nie an den Server geschickt. */
 public final class Commands {
@@ -53,6 +57,7 @@ public final class Commands {
 			case "baritone", "b" -> openBaritone();
 			case "friend", "f" -> friend(rest);
 			case "finder" -> finder(rest);
+			case "pearl", "p" -> pearl(rest);
 			default -> ChatOutput.error("Unbekannter Befehl \"" + name + "\". Alle Befehle: .help");
 		}
 		return true;
@@ -68,6 +73,53 @@ public final class Commands {
 		ChatOutput.info(".baritone – Baritone-Menü öffnen (kurz: .b)");
 		ChatOutput.info(".friend add|remove <name> / .friend list – Freunde, die nie angegriffen werden (kurz: .f)");
 		ChatOutput.info(".finder – BlockFinder-Funde, .finder add|remove <block>, .finder list, .finder goto");
+		ChatOutput.info(".pearl <x> <y> <z> / .pearl here / .pearl clear – Ziel für PearlAim (kurz: .p)");
+	}
+
+	private static void pearl(String[] args) {
+		PearlAim aim = Modules.PEARL_AIM;
+		Minecraft mc = Minecraft.getInstance();
+		String action = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);
+		Vec3 target;
+		switch (action) {
+			case "clear" -> {
+				aim.setTarget(null);
+				ChatOutput.info("Perlen-Ziel gelöscht.");
+				return;
+			}
+			case "here" -> {
+				// Weit entfernter Block im Fadenkreuz, auf dessen Oberseite die Perle landen soll
+				HitResult hit = mc.player.pick(256, 0, false);
+				if (!(hit instanceof BlockHitResult blockHit) || hit.getType() == HitResult.Type.MISS) {
+					ChatOutput.error("Kein Block im Fadenkreuz (höchstens 256 Blöcke weit, nur geladene Chunks).");
+					return;
+				}
+				target = Vec3.atBottomCenterOf(blockHit.getBlockPos().above());
+			}
+			case "" -> {
+				Vec3 current = aim.getTarget();
+				ChatOutput.info(current == null ? "Kein Ziel. Benutzung: .pearl <x> <y> <z> oder .pearl here"
+					: "Ziel: " + BlockPos.containing(current).toShortString());
+				return;
+			}
+			default -> {
+				if (args.length < 3) {
+					ChatOutput.error("Benutzung: .pearl <x> <y> <z>, .pearl here oder .pearl clear");
+					return;
+				}
+				try {
+					target = Vec3.atBottomCenterOf(new BlockPos(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+				} catch (NumberFormatException e) {
+					ChatOutput.error("Koordinaten müssen ganze Zahlen sein.");
+					return;
+				}
+			}
+		}
+		aim.setTarget(target);
+		if (!aim.isEnabled())
+			aim.setEnabled(true);
+		ChatOutput.info("Perlen-Ziel: " + BlockPos.containing(target).toShortString() + " ("
+			+ Math.round(Math.sqrt(mc.player.distanceToSqr(target))) + " m). Perle in die Hand nehmen, PearlAim zielt.");
 	}
 
 	private static void friend(String[] args) {

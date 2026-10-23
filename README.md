@@ -29,7 +29,9 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Movement | Freecam | V | Kamera vom Körper lösen, Körper bleibt stehen |
 | Render | X-Ray | X | Nur Erze und Spawner sichtbar |
 | Render | Fullbright | – | Alles taghell |
+| Render | EntityRadar | – | Markiert Endermen, Wither und optional Spieler durch Wände, meldet neue im Chat |
 | Render | BlockFinder | – | Markiert Holz, Erze oder eigene Blöcke mit Box und Linie, `.finder goto` lässt Baritone hinlaufen |
+| Player | PearlAim | – | Zielt die Enderperle automatisch auf eine mit `.pearl` festgelegte Stelle, zeigt die Flugbahn |
 | World | AutoTool | – | Bestes Werkzeug, Behutsamkeit für Glas/Eis usw., Warnung wenn nichts droppt |
 | World | FastBreak | – | Keine Pause zwischen Blöcken, optional schnellerer Abbau |
 | World | AutoMine | – | Lässt Baritone Holz oder Erze abbauen (Baritone nötig, siehe unten) |
@@ -63,6 +65,7 @@ Beginnen mit `.` und gehen **nie** an den Server. Antworten erscheinen nur bei d
 | `.finder` | die 5 nächsten Funde des BlockFinders mit Koordinaten |
 | `.finder add ancient_debris` / `.finder remove …` / `.finder list` | eigene Blockliste für BlockFinder und AutoMine (Ziel „Eigene Liste“) |
 | `.finder goto` | Baritone läuft zum nächsten Fund |
+| `.pearl 100 64 -200` / `.pearl here` / `.pearl clear` (kurz `.p`) | Ziel für PearlAim: Koordinaten, Block im Fadenkreuz (bis 256 Blöcke) oder löschen |
 
 Modulnamen sind egal bei Groß-/Kleinschreibung und Bindestrichen: `xray` findet `X-Ray`.
 

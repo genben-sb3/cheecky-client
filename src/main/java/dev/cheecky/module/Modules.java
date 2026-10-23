@@ -14,6 +14,7 @@ import dev.cheecky.modules.BlockFinder;
 import dev.cheecky.modules.BunnyHop;
 import dev.cheecky.modules.Criticals;
 import dev.cheecky.modules.ElytraFly;
+import dev.cheecky.modules.EntityRadar;
 import dev.cheecky.modules.FastBreak;
 import dev.cheecky.modules.Flight;
 import dev.cheecky.modules.Freecam;
@@ -22,6 +23,7 @@ import dev.cheecky.modules.Jesus;
 import dev.cheecky.modules.KillAura;
 import dev.cheecky.modules.NoFall;
 import dev.cheecky.modules.NoSlow;
+import dev.cheecky.modules.PearlAim;
 import dev.cheecky.modules.Speed;
 import dev.cheecky.modules.Spider;
 import dev.cheecky.modules.Step;
@@ -43,6 +45,8 @@ public final class Modules {
 	public static final AutoArmor AUTO_ARMOR = new AutoArmor();
 	public static final AutoCrystal AUTO_CRYSTAL = new AutoCrystal();
 	public static final BlockFinder BLOCK_FINDER = new BlockFinder();
+	public static final EntityRadar ENTITY_RADAR = new EntityRadar();
+	public static final PearlAim PEARL_AIM = new PearlAim();
 	public static final AutoMine AUTO_MINE = new AutoMine();
 	public static final AutoTool AUTO_TOOL = new AutoTool();
 	public static final AutoTotem AUTO_TOTEM = new AutoTotem();
@@ -61,7 +65,8 @@ public final class Modules {
 	public static final List<Module> ALL = List.of(
 		ANTI_KNOCKBACK, AUTO_ANCHOR, AUTO_ARMOR, AUTO_CRYSTAL, AUTO_MINE, AUTO_SPRINT, AUTO_TOOL, AUTO_TOTEM, BLOCK_FINDER,
 		BUNNY_HOP, CRITICALS,
-		ELYTRA_FLY, FAST_BREAK, FLIGHT, FREECAM, FULLBRIGHT, JESUS, KILL_AURA, NO_FALL, NO_SLOW, SPEED, SPIDER,
+		ELYTRA_FLY, ENTITY_RADAR, FAST_BREAK, FLIGHT, FREECAM, FULLBRIGHT, JESUS, KILL_AURA, NO_FALL, NO_SLOW,
+		PEARL_AIM, SPEED, SPIDER,
 		STEP, TRIGGER_BOT, XRAY);
 
 	private Modules() {}
