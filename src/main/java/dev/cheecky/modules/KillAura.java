@@ -3,6 +3,7 @@ package dev.cheecky.modules;
 import dev.cheecky.compat.Compat;
 import dev.cheecky.module.Category;
 import dev.cheecky.module.Module;
+import dev.cheecky.module.Modules;
 import dev.cheecky.setting.CheckboxSetting;
 import dev.cheecky.setting.SliderSetting;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -37,6 +38,9 @@ public class KillAura extends Module {
 
 		LivingEntity target = findTarget(player);
 		if (target == null)
+			return;
+
+		if (Modules.CRITICALS.shouldWaitForCrit(player))
 			return;
 
 		mc.gameMode.attack(player, target);

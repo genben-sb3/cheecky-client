@@ -4,16 +4,34 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 
 ## Module
 
-| Kategorie | Modul | Standard-Taste | Einstellungen |
+⚠️ = fällt auf Servern mit Anti-Cheat sehr wahrscheinlich auf.
+
+| Kategorie | Modul | Taste | Was es macht |
 |---|---|---|---|
-| Combat | KillAura | R | Reichweite, Spieler/Monster/Tiere |
-| Combat | AntiKnockback | – | Horizontal %, Vertikal % |
-| Movement | Flight | G | Tempo |
-| Movement | BunnyHop | B | Nur beim Sprinten |
-| Movement | NoFall | – | – |
-| Movement | AutoSprint | – | – |
-| Render | X-Ray | X | Flüssigkeiten |
-| Render | Fullbright | – | – |
+| Combat | KillAura | R | Greift das nächste Ziel in Reichweite an |
+| Combat | TriggerBot | – | Schlägt zu, wenn das Fadenkreuz auf einem Ziel liegt |
+| Combat | Criticals | – | KillAura/TriggerBot springen und treffen im Fallen kritisch |
+| Combat | AutoTotem | – | Totem automatisch in die Zweithand |
+| Combat | AutoArmor | – | Zieht die beste Rüstung an (Elytra bleibt) |
+| Combat | AutoAnchor | – | Respawn-Anker neben Gegner setzen, laden, zünden (Selbstschutz, ≥ 100 ms) |
+| Combat | AntiKnockback | – | Kein Rückstoß durch Treffer und Explosionen |
+| Movement | Flight ⚠️ | G | Fliegen wie im Kreativmodus, mit Anti-Kick gegen den Vanilla-Kick |
+| Movement | ElytraFly | – | Einfacher Start, AutoFirework, Stopp im Wasser, Ersatz-Elytra |
+| Movement | Speed ⚠️ | – | Schneller laufen (Modi Strafe/Vanilla) |
+| Movement | BunnyHop | B | Springt automatisch beim Laufen |
+| Movement | Step ⚠️ | – | Blöcke hochlaufen wie Stufen |
+| Movement | Spider ⚠️ | – | Wände hochklettern |
+| Movement | Jesus ⚠️ | – | Über Wasser und Lava laufen |
+| Movement | NoSlow | – | Kein Abbremsen beim Essen, in Spinnweben, auf Seelensand |
+| Movement | NoFall | – | Kein Fallschaden |
+| Movement | AutoSprint | – | Sprintet automatisch |
+| Movement | Freecam | V | Kamera vom Körper lösen, Körper bleibt stehen |
+| Render | X-Ray | X | Nur Erze und Spawner sichtbar |
+| Render | Fullbright | – | Alles taghell |
+| World | AutoTool | – | Bestes Werkzeug, Behutsamkeit für Glas/Eis usw., Warnung wenn nichts droppt |
+| World | FastBreak | – | Keine Pause zwischen Blöcken, optional schnellerer Abbau |
+
+Jedes Modul hat im ClickGUI eine Beschreibung (Maus drüberhalten) und eigene Einstellungen.
 
 **Rechte Shift-Taste** öffnet das ClickGUI (änderbar unter Optionen → Steuerung → Cheecky). Alternativ: Knopf **„Cheecky“** im Pausenmenü (Esc).
 

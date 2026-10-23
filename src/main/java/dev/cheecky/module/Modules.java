@@ -3,12 +3,26 @@ package dev.cheecky.module;
 import java.util.List;
 
 import dev.cheecky.modules.AntiKnockback;
+import dev.cheecky.modules.AutoAnchor;
+import dev.cheecky.modules.AutoArmor;
 import dev.cheecky.modules.AutoSprint;
+import dev.cheecky.modules.AutoTool;
+import dev.cheecky.modules.AutoTotem;
 import dev.cheecky.modules.BunnyHop;
+import dev.cheecky.modules.Criticals;
+import dev.cheecky.modules.ElytraFly;
+import dev.cheecky.modules.FastBreak;
 import dev.cheecky.modules.Flight;
+import dev.cheecky.modules.Freecam;
 import dev.cheecky.modules.Fullbright;
+import dev.cheecky.modules.Jesus;
 import dev.cheecky.modules.KillAura;
 import dev.cheecky.modules.NoFall;
+import dev.cheecky.modules.NoSlow;
+import dev.cheecky.modules.Speed;
+import dev.cheecky.modules.Spider;
+import dev.cheecky.modules.Step;
+import dev.cheecky.modules.TriggerBot;
 import dev.cheecky.modules.XRay;
 import net.minecraft.client.Minecraft;
 
@@ -22,9 +36,26 @@ public final class Modules {
 	public static final KillAura KILL_AURA = new KillAura();
 	public static final NoFall NO_FALL = new NoFall();
 	public static final XRay XRAY = new XRay();
+	public static final AutoAnchor AUTO_ANCHOR = new AutoAnchor();
+	public static final AutoArmor AUTO_ARMOR = new AutoArmor();
+	public static final AutoTool AUTO_TOOL = new AutoTool();
+	public static final AutoTotem AUTO_TOTEM = new AutoTotem();
+	public static final Criticals CRITICALS = new Criticals();
+	public static final ElytraFly ELYTRA_FLY = new ElytraFly();
+	public static final FastBreak FAST_BREAK = new FastBreak();
+	public static final Freecam FREECAM = new Freecam();
+	public static final Jesus JESUS = new Jesus();
+	public static final NoSlow NO_SLOW = new NoSlow();
+	public static final Speed SPEED = new Speed();
+	public static final Spider SPIDER = new Spider();
+	public static final Step STEP = new Step();
+	public static final TriggerBot TRIGGER_BOT = new TriggerBot();
 
+	/** Alphabetisch, so erscheinen sie in ClickGUI und Hack-Liste. */
 	public static final List<Module> ALL = List.of(
-		ANTI_KNOCKBACK, AUTO_SPRINT, BUNNY_HOP, FLIGHT, FULLBRIGHT, KILL_AURA, NO_FALL, XRAY);
+		ANTI_KNOCKBACK, AUTO_ANCHOR, AUTO_ARMOR, AUTO_SPRINT, AUTO_TOOL, AUTO_TOTEM, BUNNY_HOP, CRITICALS,
+		ELYTRA_FLY, FAST_BREAK, FLIGHT, FREECAM, FULLBRIGHT, JESUS, KILL_AURA, NO_FALL, NO_SLOW, SPEED, SPIDER,
+		STEP, TRIGGER_BOT, XRAY);
 
 	private Modules() {}
 

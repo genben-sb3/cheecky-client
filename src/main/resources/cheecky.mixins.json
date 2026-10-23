@@ -8,9 +8,17 @@
 		"BlockStateBaseMixin",
 		"CameraMixin",
 		"ClientPacketListenerMixin",
+		"EntityMixin",
 		"FluidRendererMixin",
+		"FreecamCameraMixin",
 		"KeyboardHandlerMixin",
+		"KeyboardInputMixin",
+		"LocalPlayerMixin",
+		"MinecraftMixin",
 		"ModelBlockRendererMixin",
+		"MouseHandlerMixin",
+		"MultiPlayerGameModeAccessor",
+		"MultiPlayerGameModeMixin",
 		"OptionInstanceAccessor"
 	],
 	"injectors": {

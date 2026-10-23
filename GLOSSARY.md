@@ -19,5 +19,8 @@ _Avoid_: Command, Kommando
 **Anarchy-Server**:
 Server, dessen Regeln Hacks ausdrücklich erlauben. Zusammen mit dem Singleplayer der vorgesehene Einsatzort.
 
+**Geladene Chunks**:
+Der Teil der Welt, den der Client gerade kennt (Sichtweite). Module, die etwas finden oder anzeigen, sehen nur diesen Teil.
+
 **Kategorie**:
 Gruppe von Modulen, die im ClickGUI ein gemeinsames Fenster hat, z. B. Combat oder Movement.

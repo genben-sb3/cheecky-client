@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.game.ServerboundPunchPacket;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.component.SwingAnimation;
 
 /** Was sich zwischen den Minecraft-Versionen unterscheidet. Diese Datei gilt für 26.3. */
 public final class Compat {
@@ -17,5 +18,10 @@ public final class Compat {
 	public static void swingAfterAttack(LocalPlayer player) {
 		player.swing(InteractionHand.MAIN_HAND, player.getMainHandItem().getAttackAnimation(), false);
 		player.connection.send(ServerboundPunchPacket.INSTANCE);
+	}
+
+	/** Arm schwingen nach dem Benutzen eines Items auf einem Block. */
+	public static void swingHand(LocalPlayer player) {
+		player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
 	}
 }

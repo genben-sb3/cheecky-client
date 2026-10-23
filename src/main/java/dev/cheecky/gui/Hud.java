@@ -17,6 +17,7 @@ public class Hud implements HudElement {
 	private static final int LOGO_COLOR = 0xFF00A000;
 	private static final int VERSION_COLOR = 0xFF000000;
 	private static final int LIST_COLOR = 0xFFFFFFFF;
+	private static final int WARNING_COLOR = 0xFFFF5555;
 
 	private final String version = "v" + FabricLoader.getInstance().getModContainer(Cheecky.MOD_ID)
 		.map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("?")
@@ -36,6 +37,10 @@ public class Hud implements HudElement {
 		g.fill(0, 6, logoWidth + font.width(version) + 10, 17, LOGO_BACKGROUND);
 		g.text(font, logo, 3, 8, LOGO_COLOR, false);
 		g.text(font, version, logoWidth + 7, 8, VERSION_COLOR, false);
+
+		String warning = Modules.AUTO_TOOL.getDropWarning();
+		if (warning != null)
+			g.text(font, warning, (g.guiWidth() - font.width(warning)) / 2, g.guiHeight() / 2 + 12, WARNING_COLOR, true);
 
 		int y = 22;
 		for (Module module : Modules.ALL) {
