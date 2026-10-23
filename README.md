@@ -56,6 +56,7 @@ Beginnen mit `.` und gehen **nie** an den Server. Antworten erscheinen nur bei d
 | `.binds` | alle belegten Tasten |
 | `.settings killaura` | Einstellungen anzeigen |
 | `.set killaura reichweite 4.5` | Einstellung ändern (Schalter: `an`/`aus`) |
+| `.baritone` (kurz `.b`) | Baritone-Menü öffnen |
 
 Modulnamen sind egal bei Groß-/Kleinschreibung und Bindestrichen: `xray` findet `X-Ray`.
 
@@ -77,7 +78,16 @@ set -x JAVA_HOME ~/.local/share/jdks/jdk-25.0.5+8
 2. Im Profil **Fabric API** hinzufügen.
 3. **Open Folder** → die passende `cheecky-mc<minecraft-version>-<version>.jar` aus den [Releases](https://github.com/genben-sb3/cheecky-client/releases) in den Ordner `mods/` kopieren.
 
-## Baritone (AutoMine)
+## Baritone (Menü und AutoMine)
+
+**Baritone-Menü:** Knopf **„Baritone“** im Pausenmenü (neben „Cheecky“), Chat-Befehl `.b` oder eine eigene Taste (Optionen → Steuerung → Cheecky, standardmäßig frei). Darin:
+
+- **Gehe zu:** X, Y, Z eintragen (Y leer lassen = Baritone sucht die Höhe selbst), „Hier“ trägt deine Position ein, „Los“ läuft hin.
+- **Folgen:** Spielername eintragen, Baritone läuft hinterher.
+- **Block:** z. B. `diamond_ore` oder `oak_log`, dann „Hinlaufen“ oder „Abbauen“.
+- **Erkunden**, **Farmen**, **Stopp**.
+- Schalter für Baritone-Einstellungen: Abbauen, Platzieren, Parkour, Sprinten, Inventar, Freier Blick. Baritone speichert sie selbst.
+- Oben steht, was Baritone gerade tut und wie lange es noch ungefähr dauert.
 
 Das Modul **AutoMine** (World) steuert **Baritone**: Ziel wählen (Holz, Diamant, Eisen, Gold, Antiker Schrott …), einschalten, und Baritone läuft selbst los und baut ab. Ausschalten stoppt Baritone. Baritone ist ein eigener Mod und muss zusätzlich in den `mods/`-Ordner:
 
@@ -88,7 +98,7 @@ Das Modul **AutoMine** (World) steuert **Baritone**: Ziel wählen (Holz, Diamant
 
 - Für 26.3 die **api-fabric**-Datei nehmen, **nicht** „standalone“: In der standalone-Datei ist die Schnittstelle verschleiert, die Cheecky braucht.
 - Nur **eine** Baritone-Datei in `mods/` legen.
-- Ohne Baritone ist AutoMine im ClickGUI grau.
+- Ohne Baritone ist AutoMine im ClickGUI grau und die Knöpfe im Baritone-Menü sind gesperrt.
 - Alle normalen Baritone-Befehle gehen weiterhin im Chat mit `#`: `#mine diamond_ore`, `#tunnel`, `#goto x y z`, `#farm`, `#stop`.
 
 ## Bekannte Grenzen

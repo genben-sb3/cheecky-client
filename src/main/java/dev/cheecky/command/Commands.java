@@ -6,8 +6,10 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
+import dev.cheecky.Cheecky;
 import dev.cheecky.compat.Compat;
 import dev.cheecky.config.Config;
+import dev.cheecky.gui.BaritoneScreen;
 import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
 import dev.cheecky.setting.CheckboxSetting;
@@ -38,6 +40,7 @@ public final class Commands {
 			case "binds" -> binds();
 			case "settings" -> settings(rest);
 			case "set" -> set(rest);
+			case "baritone", "b" -> openBaritone();
 			default -> ChatOutput.error("Unbekannter Befehl \"" + name + "\". Alle Befehle: .help");
 		}
 		return true;
@@ -50,6 +53,12 @@ public final class Commands {
 		ChatOutput.info(".binds – alle belegten Tasten");
 		ChatOutput.info(".settings <modul> – Einstellungen anzeigen");
 		ChatOutput.info(".set <modul> <einstellung> <wert> – Einstellung ändern");
+		ChatOutput.info(".baritone – Baritone-Menü öffnen (kurz: .b)");
+	}
+
+	private static void openBaritone() {
+		// Der Chat schließt sich nach dem Absenden selbst und würde einen sofort geöffneten Bildschirm mitschließen
+		Cheecky.openNextTick(new BaritoneScreen(null));
 	}
 
 	private static void list() {

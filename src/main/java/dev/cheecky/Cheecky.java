@@ -10,6 +10,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.cheecky.command.Commands;
 import dev.cheecky.compat.Compat;
 import dev.cheecky.config.Config;
+import dev.cheecky.gui.BaritoneScreen;
 import dev.cheecky.gui.ClickGui;
 import dev.cheecky.gui.ClickGuiScreen;
 import dev.cheecky.gui.Hud;
@@ -39,18 +40,29 @@ public class Cheecky implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
 	public static KeyMapping clickGuiKey;
+	public static KeyMapping baritoneKey;
+	private static Screen nextTickScreen;
 
 	@Override
 	public void onInitializeClient() {
 		KeyMapping.Category category = KeyMapping.Category.register(id("main"));
 		clickGuiKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 			"key.cheecky.clickgui", Compat.KEYBOARD, InputConstants.KEY_RSHIFT, category));
+		// Ohne Standardtaste, damit nichts mit Modul-Tasten kollidiert
+		baritoneKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+			"key.cheecky.baritone", Compat.KEYBOARD, InputConstants.UNKNOWN.getValue(), category));
 
 		Config.load();
 
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			while (clickGuiKey.consumeClick())
 				mc.gui.setScreen(new ClickGuiScreen(ClickGui.INSTANCE));
+			if (nextTickScreen != null) {
+				mc.gui.setScreen(nextTickScreen);
+				nextTickScreen = null;
+			}
+			while (baritoneKey.consumeClick())
+				mc.gui.setScreen(new BaritoneScreen(null));
 			Modules.onTick(mc);
 		});
 
@@ -72,7 +84,7 @@ public class Cheecky implements ClientModInitializer {
 	}
 
 	/**
-	 * Fügt im Pausenmenü unter der Zeile "Optionen..." einen breiten "Cheecky"-Knopf ein
+	 * Fügt im Pausenmenü unter der Zeile "Optionen..." die Knöpfe "Cheecky" und "Baritone" ein
 	 * und schiebt alles darunter (z. B. "Verlassen") eine Zeile nach unten.
 	 */
 	private static void addPauseMenuButton(Screen screen) {
@@ -92,8 +104,16 @@ public class Cheecky implements ClientModInitializer {
 				widget.setY(widget.getY() + rowHeight);
 
 		widgets.add(Button.builder(Component.literal(NAME), b -> Minecraft.getInstance().gui.setScreen(new ClickGuiScreen(ClickGui.INSTANCE)))
-			.bounds(options.getX(), newY, 204, options.getHeight())
+			.bounds(options.getX(), newY, 100, options.getHeight())
 			.build());
+		widgets.add(Button.builder(Component.literal("Baritone"), b -> Minecraft.getInstance().gui.setScreen(new BaritoneScreen(screen)))
+			.bounds(options.getX() + 104, newY, 100, options.getHeight())
+			.build());
+	}
+
+	/** Öffnet den Bildschirm am Ende des nächsten Ticks, z. B. aus einem Chat-Befehl heraus. */
+	public static void openNextTick(Screen screen) {
+		nextTickScreen = screen;
 	}
 
 	public static Identifier id(String path) {
