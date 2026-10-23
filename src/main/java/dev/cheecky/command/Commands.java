@@ -1,6 +1,7 @@
 package dev.cheecky.command;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,16 @@ import dev.cheecky.module.Modules;
 import dev.cheecky.setting.CheckboxSetting;
 import dev.cheecky.setting.ModeSetting;
 import dev.cheecky.setting.Setting;
+import dev.cheecky.modules.BlockFinder;
 import dev.cheecky.setting.SliderSetting;
+import dev.cheecky.util.BaritoneBridge;
+import dev.cheecky.util.BlockTarget;
+import dev.cheecky.util.CustomBlocks;
+import dev.cheecky.util.Friends;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 /** Chat-Befehle, die mit "." beginnen. Sie werden lokal ausgeführt und nie an den Server geschickt. */
 public final class Commands {
@@ -41,6 +51,8 @@ public final class Commands {
 			case "settings" -> settings(rest);
 			case "set" -> set(rest);
 			case "baritone", "b" -> openBaritone();
+			case "friend", "f" -> friend(rest);
+			case "finder" -> finder(rest);
 			default -> ChatOutput.error("Unbekannter Befehl \"" + name + "\". Alle Befehle: .help");
 		}
 		return true;
@@ -54,6 +66,100 @@ public final class Commands {
 		ChatOutput.info(".settings <modul> – Einstellungen anzeigen");
 		ChatOutput.info(".set <modul> <einstellung> <wert> – Einstellung ändern");
 		ChatOutput.info(".baritone – Baritone-Menü öffnen (kurz: .b)");
+		ChatOutput.info(".friend add|remove <name> / .friend list – Freunde, die nie angegriffen werden (kurz: .f)");
+		ChatOutput.info(".finder – BlockFinder-Funde, .finder add|remove <block>, .finder list, .finder goto");
+	}
+
+	private static void friend(String[] args) {
+		if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
+			ChatOutput.info(Friends.all().isEmpty() ? "Keine Freunde eingetragen." : "Freunde: " + String.join(", ", Friends.all()));
+			return;
+		}
+		if (args.length < 2) {
+			ChatOutput.error("Benutzung: .friend add|remove <name>");
+			return;
+		}
+		String name = args[1];
+		switch (args[0].toLowerCase(Locale.ROOT)) {
+			case "add" -> ChatOutput.info(Friends.add(name) ? name + " ist jetzt Freund und wird nicht angegriffen."
+				: name + " ist schon Freund.");
+			case "remove", "del" -> ChatOutput.info(Friends.remove(name) ? name + " ist kein Freund mehr."
+				: name + " war kein Freund.");
+			default -> {
+				ChatOutput.error("Benutzung: .friend add|remove <name>");
+				return;
+			}
+		}
+		Config.save();
+	}
+
+	private static void finder(String[] args) {
+		BlockFinder finder = Modules.BLOCK_FINDER;
+		String action = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);
+		switch (action) {
+			case "add", "remove", "del" -> {
+				if (args.length < 2) {
+					ChatOutput.error("Benutzung: .finder " + action + " <block>, z. B. .finder add ancient_debris");
+					return;
+				}
+				Block block = CustomBlocks.parse(args[1]).orElse(null);
+				if (block == null || block == Blocks.AIR) {
+					ChatOutput.error("Unbekannter Block \"" + args[1] + "\".");
+					return;
+				}
+				boolean changed = action.equals("add") ? CustomBlocks.add(block) : CustomBlocks.remove(block);
+				String name = CustomBlocks.name(block);
+				if (!changed)
+					ChatOutput.info(name + (action.equals("add") ? " ist schon in der Liste." : " war nicht in der Liste."));
+				else {
+					ChatOutput.info(name + (action.equals("add") ? " hinzugefügt." : " entfernt.") + " BlockFinder sucht jetzt die eigene Liste.");
+					finder.setTarget(BlockTarget.CUSTOM);
+					finder.reset();
+					Config.save();
+				}
+			}
+			case "list" -> ChatOutput.info(CustomBlocks.get().isEmpty() ? "Die eigene Liste ist leer."
+				: "Eigene Liste: " + CustomBlocks.get().stream().map(CustomBlocks::name).collect(Collectors.joining(", ")));
+			case "goto" -> {
+				List<BlockPos> nearest = finderResults(finder, 1);
+				if (nearest == null)
+					return;
+				if (!BaritoneBridge.isAvailable()) {
+					ChatOutput.error("Dafür muss Baritone installiert sein. Ziel: " + nearest.getFirst().toShortString());
+					return;
+				}
+				BlockPos pos = nearest.getFirst();
+				// Nur in die Nähe, sonst würde Baritone den Block abbauen, um darin zu stehen
+				if (BaritoneBridge.gotoNear(pos, 2))
+					ChatOutput.info("Baritone läuft zu " + pos.toShortString() + ". Stoppen mit #stop oder im Baritone-Menü.");
+				else
+					ChatOutput.error("Baritone konnte nicht losgeschickt werden, Details im Log.");
+			}
+			case "" -> {
+				List<BlockPos> nearest = finderResults(finder, 5);
+				if (nearest == null)
+					return;
+				ChatOutput.info(finder.getTarget() + ", die nächsten Funde:");
+				BlockPos player = Minecraft.getInstance().player.blockPosition();
+				for (BlockPos pos : nearest)
+					ChatOutput.info(pos.toShortString() + " (" + Math.round(Math.sqrt(pos.distSqr(player))) + " m)");
+			}
+			default -> ChatOutput.error("Benutzung: .finder, .finder add|remove <block>, .finder list, .finder goto");
+		}
+	}
+
+	/** @return die nächsten Funde, oder null (mit Fehlermeldung), wenn es keine gibt */
+	private static List<BlockPos> finderResults(BlockFinder finder, int limit) {
+		if (!finder.isEnabled()) {
+			ChatOutput.error("BlockFinder ist aus. Einschalten mit .t blockfinder");
+			return null;
+		}
+		List<BlockPos> nearest = finder.nearest(limit);
+		if (nearest.isEmpty()) {
+			ChatOutput.info("Noch nichts gefunden (" + finder.getTarget() + ").");
+			return null;
+		}
+		return nearest;
 	}
 
 	private static void openBaritone() {

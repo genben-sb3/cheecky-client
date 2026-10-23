@@ -5,6 +5,7 @@ import dev.cheecky.module.Category;
 import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
 import dev.cheecky.setting.CheckboxSetting;
+import dev.cheecky.util.Friends;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
@@ -29,7 +30,7 @@ public class TriggerBot extends Module {
 			return;
 		if (!(mc.hitResult instanceof EntityHitResult hit) || !(hit.getEntity() instanceof LivingEntity target))
 			return;
-		if (!target.isAlive() || !isWantedType(target) || player.getAttackStrengthScale(0) < 1)
+		if (!target.isAlive() || !isWantedType(target) || Friends.isFriend(target) || player.getAttackStrengthScale(0) < 1)
 			return;
 		if (Modules.CRITICALS.shouldWaitForCrit(player))
 			return;

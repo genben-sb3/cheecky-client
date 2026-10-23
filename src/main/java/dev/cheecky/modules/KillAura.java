@@ -6,6 +6,7 @@ import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
 import dev.cheecky.setting.CheckboxSetting;
 import dev.cheecky.setting.SliderSetting;
+import dev.cheecky.util.Friends;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
@@ -55,7 +56,7 @@ public class KillAura extends Module {
 		for (Entity entity : mc.level.entitiesForRendering()) {
 			if (!(entity instanceof LivingEntity living) || living == player || !living.isAlive())
 				continue;
-			if (!isWantedType(living))
+			if (!isWantedType(living) || Friends.isFriend(living))
 				continue;
 
 			double distance = player.distanceTo(living);

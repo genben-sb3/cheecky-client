@@ -5,10 +5,12 @@ import java.util.List;
 import dev.cheecky.modules.AntiKnockback;
 import dev.cheecky.modules.AutoAnchor;
 import dev.cheecky.modules.AutoArmor;
+import dev.cheecky.modules.AutoCrystal;
 import dev.cheecky.modules.AutoMine;
 import dev.cheecky.modules.AutoSprint;
 import dev.cheecky.modules.AutoTool;
 import dev.cheecky.modules.AutoTotem;
+import dev.cheecky.modules.BlockFinder;
 import dev.cheecky.modules.BunnyHop;
 import dev.cheecky.modules.Criticals;
 import dev.cheecky.modules.ElytraFly;
@@ -39,6 +41,8 @@ public final class Modules {
 	public static final XRay XRAY = new XRay();
 	public static final AutoAnchor AUTO_ANCHOR = new AutoAnchor();
 	public static final AutoArmor AUTO_ARMOR = new AutoArmor();
+	public static final AutoCrystal AUTO_CRYSTAL = new AutoCrystal();
+	public static final BlockFinder BLOCK_FINDER = new BlockFinder();
 	public static final AutoMine AUTO_MINE = new AutoMine();
 	public static final AutoTool AUTO_TOOL = new AutoTool();
 	public static final AutoTotem AUTO_TOTEM = new AutoTotem();
@@ -55,7 +59,8 @@ public final class Modules {
 
 	/** Alphabetisch, so erscheinen sie in ClickGUI und Hack-Liste. */
 	public static final List<Module> ALL = List.of(
-		ANTI_KNOCKBACK, AUTO_ANCHOR, AUTO_ARMOR, AUTO_MINE, AUTO_SPRINT, AUTO_TOOL, AUTO_TOTEM, BUNNY_HOP, CRITICALS,
+		ANTI_KNOCKBACK, AUTO_ANCHOR, AUTO_ARMOR, AUTO_CRYSTAL, AUTO_MINE, AUTO_SPRINT, AUTO_TOOL, AUTO_TOTEM, BLOCK_FINDER,
+		BUNNY_HOP, CRITICALS,
 		ELYTRA_FLY, FAST_BREAK, FLIGHT, FREECAM, FULLBRIGHT, JESUS, KILL_AURA, NO_FALL, NO_SLOW, SPEED, SPIDER,
 		STEP, TRIGGER_BOT, XRAY);
 

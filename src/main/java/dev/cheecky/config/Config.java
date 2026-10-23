@@ -3,9 +3,11 @@ package dev.cheecky.config;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,9 +18,11 @@ import dev.cheecky.gui.Window;
 import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
 import dev.cheecky.setting.Setting;
+import dev.cheecky.util.CustomBlocks;
+import dev.cheecky.util.Friends;
 import net.fabricmc.loader.api.FabricLoader;
 
-/** Speichert Module, Tasten, Einstellungen und Fensterpositionen in config/cheecky.json. */
+/** Speichert Module, Tasten, Einstellungen, Fensterpositionen, Freunde und die eigene Blockliste in config/cheecky.json. */
 public final class Config {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("cheecky.json");
@@ -33,6 +37,9 @@ public final class Config {
 			JsonObject root = JsonParser.parseString(Files.readString(FILE)).getAsJsonObject();
 			loadModules(root.getAsJsonObject("modules"));
 			loadWindows(root.getAsJsonObject("windows"));
+			loadList(root.getAsJsonArray("friends"), Friends::add);
+			loadList(root.getAsJsonArray("finderBlocks"),
+				name -> CustomBlocks.parse(name).ifPresent(CustomBlocks::add));
 		} catch (IOException | RuntimeException e) {
 			Cheecky.LOGGER.error("Konnte {} nicht laden, nutze Standardwerte", FILE, e);
 		}
@@ -62,6 +69,12 @@ public final class Config {
 			if (json.has("enabled") && module.rememberEnabled())
 				module.setEnabled(json.get("enabled").getAsBoolean());
 		}
+	}
+
+	private static void loadList(JsonArray array, Consumer<String> add) {
+		if (array != null)
+			for (JsonElement element : array)
+				add.accept(element.getAsString());
 	}
 
 	private static void loadWindows(JsonObject windows) {
@@ -103,6 +116,12 @@ public final class Config {
 		JsonObject root = new JsonObject();
 		root.add("modules", modules);
 		root.add("windows", windows);
+		JsonArray friends = new JsonArray();
+		Friends.all().forEach(friends::add);
+		root.add("friends", friends);
+		JsonArray finderBlocks = new JsonArray();
+		CustomBlocks.get().forEach(block -> finderBlocks.add(CustomBlocks.name(block)));
+		root.add("finderBlocks", finderBlocks);
 
 		try {
 			Files.writeString(FILE, GSON.toJson(root));

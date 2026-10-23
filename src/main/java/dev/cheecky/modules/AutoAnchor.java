@@ -5,6 +5,7 @@ import dev.cheecky.module.Category;
 import dev.cheecky.module.Module;
 import dev.cheecky.setting.CheckboxSetting;
 import dev.cheecky.setting.SliderSetting;
+import dev.cheecky.util.Friends;
 import dev.cheecky.util.InvUtil;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -34,7 +35,7 @@ public class AutoAnchor extends Module {
 	private final SliderSetting range = add(new SliderSetting("Reichweite",
 		"Wie weit das Ziel höchstens entfernt sein darf.", 5, 2, 6, 0.5, ""));
 	private final CheckboxSetting onlyPlayers = add(new CheckboxSetting("Nur Spieler",
-		"Aus: greift auch Monster und Tiere an.", true));
+		"Aus: greift auch Monster und Tiere an. Freunde (.friend) werden nie angegriffen.", true));
 	private final SliderSetting selfProtect = add(new SliderSetting("Selbstschutz",
 		"Zündet nicht, wenn du danach weniger als so viele Herzen hättest (Rüstung nicht eingerechnet).", 4, 0, 10, 0.5, " Herzen"));
 	private final SliderSetting delay = add(new SliderSetting("Verzögerung",
@@ -131,7 +132,7 @@ public class AutoAnchor extends Module {
 		LivingEntity best = null;
 		double bestDistance = range.getValue();
 		for (Entity entity : mc.level.entitiesForRendering()) {
-			if (!(entity instanceof LivingEntity living) || living == player || !living.isAlive())
+			if (!(entity instanceof LivingEntity living) || living == player || !living.isAlive() || Friends.isFriend(living))
 				continue;
 			if (living instanceof Player p ? p.isCreative() || p.isSpectator() : onlyPlayers.isChecked())
 				continue;

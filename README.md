@@ -14,6 +14,7 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Combat | AutoTotem | – | Totem automatisch in die Zweithand |
 | Combat | AutoArmor | – | Zieht die beste Rüstung an (Elytra bleibt) |
 | Combat | AutoAnchor | – | Respawn-Anker neben Gegner setzen, laden, zünden (Selbstschutz, ≥ 100 ms) |
+| Combat | AutoCrystal | – | End-Kristalle neben Gegner setzen und zünden, rechnet Rüstung und Eigenschaden mit (≥ 100 ms) |
 | Combat | AntiKnockback | – | Kein Rückstoß durch Treffer und Explosionen |
 | Movement | Flight ⚠️ | G | Fliegen wie im Kreativmodus, mit Anti-Kick gegen den Vanilla-Kick |
 | Movement | ElytraFly | – | Einfacher Start, AutoFirework, Stopp im Wasser, Ersatz-Elytra |
@@ -28,6 +29,7 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Movement | Freecam | V | Kamera vom Körper lösen, Körper bleibt stehen |
 | Render | X-Ray | X | Nur Erze und Spawner sichtbar |
 | Render | Fullbright | – | Alles taghell |
+| Render | BlockFinder | – | Markiert Holz, Erze oder eigene Blöcke mit Box und Linie, `.finder goto` lässt Baritone hinlaufen |
 | World | AutoTool | – | Bestes Werkzeug, Behutsamkeit für Glas/Eis usw., Warnung wenn nichts droppt |
 | World | FastBreak | – | Keine Pause zwischen Blöcken, optional schnellerer Abbau |
 | World | AutoMine | – | Lässt Baritone Holz oder Erze abbauen (Baritone nötig, siehe unten) |
@@ -57,6 +59,10 @@ Beginnen mit `.` und gehen **nie** an den Server. Antworten erscheinen nur bei d
 | `.settings killaura` | Einstellungen anzeigen |
 | `.set killaura reichweite 4.5` | Einstellung ändern (Schalter: `an`/`aus`) |
 | `.baritone` (kurz `.b`) | Baritone-Menü öffnen |
+| `.friend add Name` / `.friend remove Name` / `.friend list` (kurz `.f`) | Freunde: KillAura, TriggerBot, AutoAnchor und AutoCrystal greifen sie nie an |
+| `.finder` | die 5 nächsten Funde des BlockFinders mit Koordinaten |
+| `.finder add ancient_debris` / `.finder remove …` / `.finder list` | eigene Blockliste für BlockFinder und AutoMine (Ziel „Eigene Liste“) |
+| `.finder goto` | Baritone läuft zum nächsten Fund |
 
 Modulnamen sind egal bei Groß-/Kleinschreibung und Bindestrichen: `xray` findet `X-Ray`.
 

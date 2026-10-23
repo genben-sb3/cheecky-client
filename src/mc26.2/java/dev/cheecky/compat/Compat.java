@@ -19,6 +19,10 @@ public final class Compat {
 
 	/** Arm schwingen nach dem Benutzen eines Items auf einem Block. */
 	public static void swingHand(LocalPlayer player) {
-		player.swing(InteractionHand.MAIN_HAND);
+		swingHand(player, InteractionHand.MAIN_HAND);
+	}
+
+	public static void swingHand(LocalPlayer player, InteractionHand hand) {
+		player.swing(hand);
 	}
 }

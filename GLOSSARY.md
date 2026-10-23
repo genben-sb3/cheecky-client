@@ -22,5 +22,9 @@ Server, dessen Regeln Hacks ausdrücklich erlauben. Zusammen mit dem Singleplaye
 **Geladene Chunks**:
 Der Teil der Welt, den der Client gerade kennt (Sichtweite). Module, die etwas finden oder anzeigen, sehen nur diesen Teil.
 
+**Freund**:
+Spieler, den Kampf-Module nie angreifen, z. B. Mitglieder des eigenen Clans.
+_Avoid_: Teammitglied, Verbündeter
+
 **Kategorie**:
 Gruppe von Modulen, die im ClickGUI ein gemeinsames Fenster hat, z. B. Combat oder Movement.

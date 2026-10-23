@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import dev.cheecky.Cheecky;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 
 /**
@@ -43,6 +44,22 @@ public final class BaritoneBridge {
 			return true;
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			Cheecky.LOGGER.error("Baritone konnte nicht gestartet werden", e);
+			return false;
+		}
+	}
+
+	/** Läuft bis auf {@code range} Blöcke an pos heran, ohne den Block selbst abzubauen. */
+	public static boolean gotoNear(BlockPos pos, int range) {
+		try {
+			Object goal = Class.forName("baritone.api.pathing.goals.GoalNear")
+				.getConstructor(BlockPos.class, int.class).newInstance(pos, range);
+			Object process = call("baritone.api.IBaritone", primaryBaritone(), "getCustomGoalProcess");
+			Class.forName("baritone.api.process.ICustomGoalProcess")
+				.getMethod("setGoalAndPath", Class.forName("baritone.api.pathing.goals.Goal"))
+				.invoke(process, goal);
+			return true;
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			Cheecky.LOGGER.error("Baritone konnte nicht losgeschickt werden", e);
 			return false;
 		}
 	}
