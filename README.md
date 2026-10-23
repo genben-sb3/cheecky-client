@@ -25,10 +25,12 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Movement | Jesus ⚠️ | – | Über Wasser und Lava laufen |
 | Movement | NoSlow | – | Kein Abbremsen beim Essen, in Spinnweben, auf Seelensand |
 | Movement | NoFall | – | Kein Fallschaden |
+| Movement | Autopilot | – | Hält auf dem Highway die Richtung (zu Fuß oder Elytra), stoppt bei Withern, Hindernissen, Hunger, kaputter Elytra |
 | Movement | AutoSprint | – | Sprintet automatisch |
 | Movement | Freecam | V | Kamera vom Körper lösen, Körper bleibt stehen |
 | Render | X-Ray | X | Nur Erze und Spawner sichtbar |
 | Render | Fullbright | – | Alles taghell |
+| Render | Koordinaten | – | Unten rechts: Position, umgerechnete Nether-/Oberwelt-Koordinate, Blickrichtung (standardmäßig an) |
 | Render | EntityRadar | – | Markiert Endermen, Wither und optional Spieler durch Wände, meldet neue im Chat |
 | Render | BlockFinder | – | Markiert Holz, Erze oder eigene Blöcke mit Box und Linie, `.finder goto` lässt Baritone hinlaufen |
 | Player | PearlAim | – | Zielt die Enderperle automatisch auf eine mit `.pearl` festgelegte Stelle, zeigt die Flugbahn |
@@ -65,6 +67,8 @@ Beginnen mit `.` und gehen **nie** an den Server. Antworten erscheinen nur bei d
 | `.finder` | die 5 nächsten Funde des BlockFinders mit Koordinaten |
 | `.finder add ancient_debris` / `.finder remove …` / `.finder list` | eigene Blockliste für BlockFinder und AutoMine (Ziel „Eigene Liste“) |
 | `.finder goto` | Baritone läuft zum nächsten Fund |
+| `.home add Base` / `.home add Stash 120000 -5000` / `.home list` / `.home remove Base` | Merkt sich, wo deine /home-Punkte liegen |
+| `.home nearest 250000 0` | Welcher Home liegt am nächsten an diesem Ziel (Oberwelt-Koordinaten)? |
 | `.pearl 100 64 -200` / `.pearl here` / `.pearl clear` (kurz `.p`) | Ziel für PearlAim: Koordinaten, Block im Fadenkreuz (bis 256 Blöcke) oder löschen |
 
 Modulnamen sind egal bei Groß-/Kleinschreibung und Bindestrichen: `xray` findet `X-Ray`.
@@ -96,6 +100,8 @@ set -x JAVA_HOME ~/.local/share/jdks/jdk-25.0.5+8
 - **Block:** z. B. `diamond_ore` oder `oak_log`, dann „Hinlaufen“ oder „Abbauen“.
 - **Erkunden**, **Farmen**, **Stopp**.
 - Schalter für Baritone-Einstellungen: Abbauen, Platzieren, Parkour, Sprinten, Inventar, Freier Blick. Baritone speichert sie selbst.
+- **Elytra-Flug zu X/Z:** Baritone fliegt mit Elytra und Raketen zum Ziel, gedacht für den Nether. Auf 6b6t trägt Cheecky den offiziellen Seed und die Gelände-Vorhersage selbst ein. Beim ersten Mal verlangt Baritone im Chat, dass du `#set elytraTermsAccepted true` eingibst.
+- **Koords: Oberwelt/Nether:** in welchen Koordinaten du X/Y/Z einträgst. Cheecky rechnet für die Dimension, in der du bist, selbst um (÷ bzw. × 8).
 - Oben steht, was Baritone gerade tut und wie lange es noch ungefähr dauert.
 
 Das Modul **AutoMine** (World) steuert **Baritone**: Ziel wählen (Holz, Diamant, Eisen, Gold, Antiker Schrott …), einschalten, und Baritone läuft selbst los und baut ab. Ausschalten stoppt Baritone. Baritone ist ein eigener Mod und muss zusätzlich in den `mods/`-Ordner:

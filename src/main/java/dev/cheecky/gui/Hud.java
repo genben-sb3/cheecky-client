@@ -3,15 +3,18 @@ package dev.cheecky.gui;
 import dev.cheecky.Cheecky;
 import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
+import dev.cheecky.modules.Autopilot;
+import dev.cheecky.util.Coords;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.BlockPos;
 import net.fabricmc.loader.api.FabricLoader;
 
-/** Logo-Leiste oben links und darunter die Liste der aktiven Module, wie bei Wurst. */
+/** Logo-Leiste oben links, darunter die Liste der aktiven Module (wie bei Wurst), unten rechts die Koordinaten. */
 public class Hud implements HudElement {
 	private static final int LOGO_BACKGROUND = 0x80FFFFFF;
 	private static final int LOGO_COLOR = 0xFF00A000;
@@ -42,11 +45,35 @@ public class Hud implements HudElement {
 		if (warning != null)
 			g.text(font, warning, (g.guiWidth() - font.width(warning)) / 2, g.guiHeight() / 2 + 12, WARNING_COLOR, true);
 
+		if (Modules.COORDINATES.isEnabled())
+			drawCoordinates(g, mc, font);
+
 		int y = 22;
 		for (Module module : Modules.ALL) {
 			if (!module.isEnabled())
 				continue;
 			g.text(font, module.name, 2, y, LIST_COLOR, true);
+			y += font.lineHeight;
+		}
+	}
+
+	/** Unten rechts: eigene Position, umgerechnete Position der anderen Dimension, Blickrichtung. */
+	private static void drawCoordinates(GuiGraphicsExtractor g, Minecraft mc, Font font) {
+		if (mc.player == null)
+			return;
+		BlockPos pos = mc.player.blockPosition();
+		boolean nether = Coords.inNether();
+		String other = nether
+			? "Oberwelt: " + pos.getX() * Coords.NETHER_SCALE + " " + pos.getZ() * Coords.NETHER_SCALE
+			: "Nether: " + Math.floorDiv(pos.getX(), Coords.NETHER_SCALE) + " " + Math.floorDiv(pos.getZ(), Coords.NETHER_SCALE);
+		String[] lines = {
+			"XYZ: " + pos.getX() + " " + pos.getY() + " " + pos.getZ(),
+			other,
+			Autopilot.directionName(mc.player.getYRot())};
+
+		int y = g.guiHeight() - 2 - lines.length * font.lineHeight;
+		for (String line : lines) {
+			g.text(font, line, g.guiWidth() - 2 - font.width(line), y, LIST_COLOR, true);
 			y += font.lineHeight;
 		}
 	}

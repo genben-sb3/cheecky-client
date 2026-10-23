@@ -20,9 +20,10 @@ import dev.cheecky.module.Modules;
 import dev.cheecky.setting.Setting;
 import dev.cheecky.util.CustomBlocks;
 import dev.cheecky.util.Friends;
+import dev.cheecky.util.Homes;
 import net.fabricmc.loader.api.FabricLoader;
 
-/** Speichert Module, Tasten, Einstellungen, Fensterpositionen, Freunde und die eigene Blockliste in config/cheecky.json. */
+/** Speichert Module, Tasten, Einstellungen, Fensterpositionen, Freunde, Homes und die eigene Blockliste in config/cheecky.json. */
 public final class Config {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("cheecky.json");
@@ -40,6 +41,7 @@ public final class Config {
 			loadList(root.getAsJsonArray("friends"), Friends::add);
 			loadList(root.getAsJsonArray("finderBlocks"),
 				name -> CustomBlocks.parse(name).ifPresent(CustomBlocks::add));
+			loadHomes(root.getAsJsonObject("homes"));
 		} catch (IOException | RuntimeException e) {
 			Cheecky.LOGGER.error("Konnte {} nicht laden, nutze Standardwerte", FILE, e);
 		}
@@ -75,6 +77,16 @@ public final class Config {
 		if (array != null)
 			for (JsonElement element : array)
 				add.accept(element.getAsString());
+	}
+
+	private static void loadHomes(JsonObject homes) {
+		if (homes == null)
+			return;
+		for (String name : homes.keySet()) {
+			JsonObject home = homes.getAsJsonObject(name);
+			Homes.put(name, new Homes.Home(home.get("x").getAsInt(), home.get("y").getAsInt(), home.get("z").getAsInt(),
+				home.get("nether").getAsBoolean()));
+		}
 	}
 
 	private static void loadWindows(JsonObject windows) {
@@ -122,6 +134,16 @@ public final class Config {
 		JsonArray finderBlocks = new JsonArray();
 		CustomBlocks.get().forEach(block -> finderBlocks.add(CustomBlocks.name(block)));
 		root.add("finderBlocks", finderBlocks);
+		JsonObject homes = new JsonObject();
+		Homes.all().forEach((name, home) -> {
+			JsonObject json = new JsonObject();
+			json.addProperty("x", home.x());
+			json.addProperty("y", home.y());
+			json.addProperty("z", home.z());
+			json.addProperty("nether", home.nether());
+			homes.add(name, json);
+		});
+		root.add("homes", homes);
 
 		try {
 			Files.writeString(FILE, GSON.toJson(root));

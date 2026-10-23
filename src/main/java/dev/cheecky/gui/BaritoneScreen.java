@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import dev.cheecky.module.Modules;
 import dev.cheecky.util.BaritoneBridge;
+import dev.cheecky.util.Coords;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -35,6 +36,10 @@ public class BaritoneScreen extends Screen {
 
 	// Eingaben bleiben erhalten, wenn man den Bildschirm schließt und wieder öffnet
 	private static String lastX = "", lastY = "", lastZ = "", lastPlayer = "", lastBlock = "";
+	/** Die Koordinatenfelder sind in Oberwelt-Koordinaten (sonst Nether), unabhängig davon, wo man gerade ist. */
+	private static boolean overworldCoords = true;
+	/** Seed von 6b6t laut offiziellem Blog, damit Baritone-Elytra das ungeladene Nether-Gelände vorhersagen kann. */
+	private static final String SIXB6T_NETHER_SEED = "-4172144997902289642";
 
 	private final Screen parent;
 	private EditBox x, y, z, player, block;
@@ -48,7 +53,7 @@ public class BaritoneScreen extends Screen {
 	@Override
 	protected void init() {
 		int left = width / 2 - WIDTH / 2;
-		int top = Math.max(40, height / 2 - 110);
+		int top = top();
 		boolean available = BaritoneBridge.isAvailable();
 		// Beim Ändern der Fenstergröße wird init erneut aufgerufen, getippte Werte sollen bleiben
 		if (x != null)
@@ -91,8 +96,21 @@ public class BaritoneScreen extends Screen {
 		button("§cStopp", left + 2 * (third + GAP), row4, third, "Bricht alles ab, was Baritone gerade tut.", this::stop)
 			.active = available;
 
-		// Zeilen 5 und 6: Einstellungen
-		int toggleTop = top + 4 * ROW + 12;
+		// Zeile 5: Elytra-Flug und Koordinatensystem der Felder
+		int row5 = top + 4 * ROW;
+		button("Elytra-Flug zu X/Z", left, row5, 196,
+			"Baritone fliegt mit Elytra und Raketen zum Ziel, gedacht für den Nether. Elytra anziehen, Raketen ins Inventar.",
+			this::elytraFlight).active = available;
+		Button[] coordsButton = new Button[1];
+		coordsButton[0] = button(coordsLabel(), left + 200, row5, 100,
+			"In welchen Koordinaten du X/Y/Z einträgst. Cheecky rechnet für die Dimension, in der du bist, selbst um (÷ bzw. × 8).",
+			() -> {
+				overworldCoords = !overworldCoords;
+				coordsButton[0].setMessage(Component.literal(coordsLabel()));
+			});
+
+		// Zeilen 6 und 7: Einstellungen
+		int toggleTop = top + 5 * ROW + 12;
 		for (int i = 0; i < TOGGLES.size(); i++) {
 			Toggle toggle = TOGGLES.get(i);
 			int tx = left + i % 3 * (third + GAP);
@@ -133,25 +151,74 @@ public class BaritoneScreen extends Screen {
 			.orElse(toggle.label());
 	}
 
+	/** Obere Kante der ersten Zeile, so dass alle 8 Zeilen samt Titel auf den Bildschirm passen. */
+	private int top() {
+		return Math.max(40, height / 2 - 122);
+	}
+
+	private static String coordsLabel() {
+		return overworldCoords ? "Koords: Oberwelt" : "Koords: Nether";
+	}
+
+	/** Gleiche Dimension wie die Felder? Dann bleibt Y gültig, sonst wird es ignoriert. */
+	private static boolean fieldsMatchDimension() {
+		return overworldCoords != Coords.inNether();
+	}
+
 	private void fillHere() {
 		if (minecraft.player == null)
 			return;
 		BlockPos pos = minecraft.player.blockPosition();
-		x.setValue(String.valueOf(pos.getX()));
-		y.setValue(String.valueOf(pos.getY()));
-		z.setValue(String.valueOf(pos.getZ()));
+		x.setValue(String.valueOf(Coords.fromCurrent(pos.getX(), overworldCoords)));
+		y.setValue(fieldsMatchDimension() ? String.valueOf(pos.getY()) : "");
+		z.setValue(String.valueOf(Coords.fromCurrent(pos.getZ(), overworldCoords)));
+	}
+
+	/** X/Z aus den Feldern, umgerechnet in die aktuelle Dimension; null (mit Meldung) bei ungültiger Eingabe. */
+	private int[] targetXZ() {
+		try {
+			return new int[] {
+				Coords.toCurrent(Integer.parseInt(x.getValue().trim()), overworldCoords),
+				Coords.toCurrent(Integer.parseInt(z.getValue().trim()), overworldCoords)};
+		} catch (NumberFormatException e) {
+			message = "§cX und Z müssen ganze Zahlen sein.";
+			return null;
+		}
 	}
 
 	private void gotoCoords() {
-		try {
-			int gx = Integer.parseInt(x.getValue().trim());
-			int gz = Integer.parseInt(z.getValue().trim());
-			String yText = y.getValue().trim();
-			// Ohne Y sucht Baritone sich selbst die Höhe, das ist für weite Strecken meist besser
-			run(yText.isEmpty() ? "goto " + gx + " " + gz : "goto " + gx + " " + Integer.parseInt(yText) + " " + gz);
-		} catch (NumberFormatException e) {
-			message = "§cX und Z müssen ganze Zahlen sein, Y ganze Zahl oder leer.";
+		int[] xz = targetXZ();
+		if (xz == null)
+			return;
+		String yText = y.getValue().trim();
+		// Ohne Y sucht Baritone sich selbst die Höhe, das ist für weite Strecken meist besser.
+		// Y aus der anderen Dimension passt nicht, dann ebenfalls ohne Y.
+		if (yText.isEmpty() || !fieldsMatchDimension()) {
+			run("goto " + xz[0] + " " + xz[1]);
+			return;
 		}
+		try {
+			run("goto " + xz[0] + " " + Integer.parseInt(yText) + " " + xz[1]);
+		} catch (NumberFormatException e) {
+			message = "§cY muss eine ganze Zahl sein oder leer bleiben.";
+		}
+	}
+
+	private void elytraFlight() {
+		int[] xz = targetXZ();
+		if (xz == null)
+			return;
+		if (Coords.on6b6t()) {
+			BaritoneBridge.setSetting("elytraNetherSeed", SIXB6T_NETHER_SEED);
+			BaritoneBridge.setSetting("elytraPredictTerrain", true);
+		}
+		// Das Nether-Dach ist auf 6b6t gesperrt, Baritone soll nicht darüber planen
+		BaritoneBridge.setSetting("elytraAllowAboveRoof", false);
+		if (!BaritoneBridge.execute("goal " + xz[0] + " " + xz[1])) {
+			message = "§cBaritone hat das Ziel nicht angenommen, Details im Chat.";
+			return;
+		}
+		run("elytra");
 	}
 
 	private void runWithBlock(String command) {
@@ -183,11 +250,11 @@ public class BaritoneScreen extends Screen {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTicks) {
 		super.extractRenderState(g, mouseX, mouseY, partialTicks);
-		int top = Math.max(40, height / 2 - 110);
+		int top = top();
 		g.centeredText(font, title, width / 2, top - 30, Theme.TEXT);
 		g.centeredText(font, BaritoneBridge.status(), width / 2, top - 16, Theme.UNAVAILABLE_TEXT);
 		if (!message.isEmpty())
-			g.centeredText(font, message, width / 2, top + 4 * ROW + 2, Theme.TEXT);
+			g.centeredText(font, message, width / 2, top + 5 * ROW + 2, Theme.TEXT);
 	}
 
 	@Override

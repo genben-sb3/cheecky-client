@@ -21,8 +21,10 @@ import dev.cheecky.modules.PearlAim;
 import dev.cheecky.setting.SliderSetting;
 import dev.cheecky.util.BaritoneBridge;
 import dev.cheecky.util.BlockTarget;
+import dev.cheecky.util.Coords;
 import dev.cheecky.util.CustomBlocks;
 import dev.cheecky.util.Friends;
+import dev.cheecky.util.Homes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
@@ -58,6 +60,7 @@ public final class Commands {
 			case "friend", "f" -> friend(rest);
 			case "finder" -> finder(rest);
 			case "pearl", "p" -> pearl(rest);
+			case "home", "homes" -> home(rest);
 			default -> ChatOutput.error("Unbekannter Befehl \"" + name + "\". Alle Befehle: .help");
 		}
 		return true;
@@ -74,6 +77,85 @@ public final class Commands {
 		ChatOutput.info(".friend add|remove <name> / .friend list – Freunde, die nie angegriffen werden (kurz: .f)");
 		ChatOutput.info(".finder – BlockFinder-Funde, .finder add|remove <block>, .finder list, .finder goto");
 		ChatOutput.info(".pearl <x> <y> <z> / .pearl here / .pearl clear – Ziel für PearlAim (kurz: .p)");
+		ChatOutput.info(".home add <name> [x z] / .home remove <name> / .home list / .home nearest <x> <z> – deine /home-Punkte");
+	}
+
+	private static void home(String[] args) {
+		Minecraft mc = Minecraft.getInstance();
+		String action = args.length == 0 ? "list" : args[0].toLowerCase(Locale.ROOT);
+		switch (action) {
+			case "add", "set" -> {
+				if (args.length != 2 && args.length != 4) {
+					ChatOutput.error("Benutzung: .home add <name> (aktuelle Position) oder .home add <name> <x> <z> (Oberwelt)");
+					return;
+				}
+				Homes.Home home;
+				if (args.length == 2) {
+					BlockPos pos = mc.player.blockPosition();
+					home = new Homes.Home(pos.getX(), pos.getY(), pos.getZ(), Coords.inNether());
+				} else {
+					try {
+						home = new Homes.Home(Integer.parseInt(args[2]), 0, Integer.parseInt(args[3]), false);
+					} catch (NumberFormatException e) {
+						ChatOutput.error("Koordinaten müssen ganze Zahlen sein.");
+						return;
+					}
+				}
+				Homes.put(args[1], home);
+				ChatOutput.info("Home \"" + args[1] + "\" gemerkt: " + home.describe()
+					+ ". Den Home auf dem Server setzt du selbst mit /sethome.");
+				Config.save();
+			}
+			case "remove", "del" -> {
+				if (args.length < 2) {
+					ChatOutput.error("Benutzung: .home remove <name>");
+					return;
+				}
+				ChatOutput.info(Homes.remove(args[1]) ? "Home \"" + args[1] + "\" vergessen." : "Kein Home \"" + args[1] + "\".");
+				Config.save();
+			}
+			case "list" -> {
+				if (Homes.all().isEmpty()) {
+					ChatOutput.info("Keine Homes gemerkt. Am Home-Punkt stehen und .home add <name> eingeben.");
+					return;
+				}
+				Homes.all().forEach((name, home) -> ChatOutput.info(name + ": " + home.describe()));
+			}
+			case "nearest", "near" -> {
+				if (args.length < 3) {
+					ChatOutput.error("Benutzung: .home nearest <x> <z> (Oberwelt-Koordinaten des Ziels)");
+					return;
+				}
+				int tx, tz;
+				try {
+					tx = Integer.parseInt(args[1]);
+					tz = Integer.parseInt(args[2]);
+				} catch (NumberFormatException e) {
+					ChatOutput.error("Koordinaten müssen ganze Zahlen sein.");
+					return;
+				}
+				String bestName = null;
+				double bestDistance = Double.MAX_VALUE;
+				for (var entry : Homes.all().entrySet()) {
+					Homes.Home home = entry.getValue();
+					double distance = Math.hypot(home.overworldX() - tx, home.overworldZ() - tz);
+					if (distance < bestDistance) {
+						bestName = entry.getKey();
+						bestDistance = distance;
+					}
+				}
+				if (bestName == null) {
+					ChatOutput.info("Keine Homes gemerkt.");
+					return;
+				}
+				// Zum Vergleich: wie weit ist das Ziel von hier?
+				BlockPos pos = mc.player.blockPosition();
+				double fromHere = Math.hypot(Coords.fromCurrent(pos.getX(), true) - tx, Coords.fromCurrent(pos.getZ(), true) - tz);
+				ChatOutput.info("Nächster Home: " + bestName + " (" + Math.round(bestDistance) + " Blöcke zum Ziel, von hier aus "
+					+ Math.round(fromHere) + ")." + (bestDistance < fromHere ? " Mit /home " + bestName + " springen lohnt sich." : " Von hier ist es näher."));
+			}
+			default -> ChatOutput.error("Benutzung: .home add|remove|list|nearest");
+		}
 	}
 
 	private static void pearl(String[] args) {
