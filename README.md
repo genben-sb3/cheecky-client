@@ -30,6 +30,7 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Render | Fullbright | – | Alles taghell |
 | World | AutoTool | – | Bestes Werkzeug, Behutsamkeit für Glas/Eis usw., Warnung wenn nichts droppt |
 | World | FastBreak | – | Keine Pause zwischen Blöcken, optional schnellerer Abbau |
+| World | AutoMine | – | Lässt Baritone Holz oder Erze abbauen (Baritone nötig, siehe unten) |
 
 Jedes Modul hat im ClickGUI eine Beschreibung (Maus drüberhalten) und eigene Einstellungen.
 
@@ -76,13 +77,19 @@ set -x JAVA_HOME ~/.local/share/jdks/jdk-25.0.5+8
 2. Im Profil **Fabric API** hinzufügen.
 3. **Open Folder** → die passende `cheecky-mc<minecraft-version>-<version>.jar` aus den [Releases](https://github.com/genben-sb3/cheecky-client/releases) in den Ordner `mods/` kopieren.
 
-## Materialien sammeln mit Baritone
+## Baritone (AutoMine)
 
-Für automatisches Laufen und Abbauen gibt es **Baritone** als eigenen Mod:
+Das Modul **AutoMine** (World) steuert **Baritone**: Ziel wählen (Holz, Diamant, Eisen, Gold, Antiker Schrott …), einschalten, und Baritone läuft selbst los und baut ab. Ausschalten stoppt Baritone. Baritone ist ein eigener Mod und muss zusätzlich in den `mods/`-Ordner:
 
-1. Von https://github.com/cabaletta/baritone/releases die Datei `baritone-standalone-fabric-1.20.0.jar` (für MC 26.3) laden.
-2. In denselben `mods/`-Ordner legen wie Cheecky.
-3. Im Spiel: `#mine diamond_ore`, `#tunnel`, `#goto x y z`, `#farm`, `#stop`.
+| Minecraft | Datei | Download |
+|---|---|---|
+| 26.3 | `baritone-api-fabric-1.20.0.jar` | https://github.com/cabaletta/baritone/releases/tag/v1.20.0 |
+| 26.2 | `baritone-26.2-20260813.152229-1.jar` (Meteor-Build, läuft ohne Meteor) | https://maven.meteordev.org/snapshots/meteordevelopment/baritone/26.2-SNAPSHOT/baritone-26.2-20260813.152229-1.jar |
+
+- Für 26.3 die **api-fabric**-Datei nehmen, **nicht** „standalone“: In der standalone-Datei ist die Schnittstelle verschleiert, die Cheecky braucht.
+- Nur **eine** Baritone-Datei in `mods/` legen.
+- Ohne Baritone ist AutoMine im ClickGUI grau.
+- Alle normalen Baritone-Befehle gehen weiterhin im Chat mit `#`: `#mine diamond_ore`, `#tunnel`, `#goto x y z`, `#farm`, `#stop`.
 
 ## Bekannte Grenzen
 

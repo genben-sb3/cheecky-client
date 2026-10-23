@@ -3,6 +3,7 @@ package dev.cheecky.module;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.cheecky.command.ChatOutput;
 import dev.cheecky.setting.Setting;
 import net.minecraft.client.Minecraft;
 
@@ -40,6 +41,10 @@ public abstract class Module {
 	public void setEnabled(boolean enabled) {
 		if (this.enabled == enabled)
 			return;
+		if (enabled && !isAvailable()) {
+			ChatOutput.error(name + ": " + getUnavailableReason());
+			return;
+		}
 
 		this.enabled = enabled;
 		if (enabled)
@@ -50,6 +55,20 @@ public abstract class Module {
 
 	public void toggle() {
 		setEnabled(!enabled);
+	}
+
+	/** false, wenn eine Voraussetzung fehlt (z. B. ein anderer Mod). Das Modul lässt sich dann nicht einschalten. */
+	public boolean isAvailable() {
+		return true;
+	}
+
+	public String getUnavailableReason() {
+		return "";
+	}
+
+	/** false für Module, die nach einem Neustart nicht von selbst wieder an sein sollen. */
+	public boolean rememberEnabled() {
+		return true;
 	}
 
 	public int getKey() {

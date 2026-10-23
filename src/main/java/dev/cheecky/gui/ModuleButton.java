@@ -51,7 +51,8 @@ public class ModuleButton extends GuiComponent {
 
 		String arrow = ClickGui.INSTANCE.isSettingsOpen(module) ? "<" : ">";
 		g.text(font(), arrow, x3 + (ARROW_WIDTH - font().width(arrow)) / 2 + 1, y + 2, Theme.TEXT, false);
-		g.text(font(), module.name, x + (x3 - x - font().width(module.name)) / 2, y + 2, Theme.TEXT, false);
+		int textColor = module.isAvailable() ? Theme.TEXT : Theme.UNAVAILABLE_TEXT;
+		g.text(font(), module.name, x + (x3 - x - font().width(module.name)) / 2, y + 2, textColor, false);
 	}
 
 	@Override
@@ -64,6 +65,8 @@ public class ModuleButton extends GuiComponent {
 
 	@Override
 	public String getTooltip() {
+		if (!module.isAvailable())
+			return module.description + " (" + module.getUnavailableReason() + ")";
 		return module.description;
 	}
 }

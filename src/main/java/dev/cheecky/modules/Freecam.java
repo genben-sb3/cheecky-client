@@ -28,6 +28,11 @@ public class Freecam extends Module {
 	}
 
 	@Override
+	public boolean rememberEnabled() {
+		return false;
+	}
+
+	@Override
 	protected void onEnable() {
 		if (mc.player == null) {
 			setEnabled(false);

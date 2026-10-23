@@ -6,6 +6,7 @@ public final class Theme {
 	public static final int ACCENT = 0x101010;
 	public static final int ENABLED = 0x00FF00;
 	public static final int TEXT = 0xFFF0F0F0;
+	public static final int UNAVAILABLE_TEXT = 0xFF808080;
 	public static final float OPACITY = 0.5F;
 
 	private Theme() {}

@@ -59,7 +59,7 @@ public final class Config {
 				}
 
 			// Erst nach den Einstellungen aktivieren, damit onEnable die geladenen Werte sieht
-			if (json.has("enabled"))
+			if (json.has("enabled") && module.rememberEnabled())
 				module.setEnabled(json.get("enabled").getAsBoolean());
 		}
 	}
