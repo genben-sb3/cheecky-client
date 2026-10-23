@@ -8,12 +8,28 @@ dependencies {
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
+// Versionsabhängiger Code liegt in src/mc<version>/java, z. B. die Tastatur-API
+sourceSets {
+	main {
+		java {
+			srcDir "src/mc${project.minecraft_version}/java"
+		}
+	}
+}
+
+// Jar-Name enthält die Minecraft-Version, damit Builds für 26.2 und 26.3 nebeneinander liegen
+base {
+	archivesName = "cheecky-mc${project.minecraft_version}"
+}
+
 processResources {
 	def version = project.version
+	def minecraftVersion = project.minecraft_version
 	inputs.property "version", version
+	inputs.property "minecraftVersion", minecraftVersion
 
 	filesMatching("fabric.mod.json") {
-		expand "version": version
+		expand "version": version, "minecraft_version": minecraftVersion
 	}
 }
 

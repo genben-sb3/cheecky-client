@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
+import dev.cheecky.compat.Compat;
 import dev.cheecky.config.Config;
 import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
@@ -202,13 +203,13 @@ public final class Commands {
 	private static int parseKey(String name) {
 		try {
 			InputConstants.Key key = InputConstants.getKey("key.keyboard." + name);
-			return key.getType() == InputConstants.Type.KEYBOARD ? key.getValue() : 0;
+			return key.getType() == Compat.KEYBOARD ? key.getValue() : 0;
 		} catch (RuntimeException e) {
 			return 0;
 		}
 	}
 
 	private static String keyDisplayName(int key) {
-		return InputConstants.Type.KEYBOARD.getOrCreate(key).getDisplayName().getString();
+		return Compat.KEYBOARD.getOrCreate(key).getDisplayName().getString();
 	}
 }

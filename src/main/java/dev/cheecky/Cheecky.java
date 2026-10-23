@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import dev.cheecky.command.Commands;
+import dev.cheecky.compat.Compat;
 import dev.cheecky.config.Config;
 import dev.cheecky.gui.ClickGui;
 import dev.cheecky.gui.ClickGuiScreen;
@@ -43,7 +44,7 @@ public class Cheecky implements ClientModInitializer {
 	public void onInitializeClient() {
 		KeyMapping.Category category = KeyMapping.Category.register(id("main"));
 		clickGuiKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-			"key.cheecky.clickgui", InputConstants.Type.KEYBOARD, InputConstants.KEY_RSHIFT, category));
+			"key.cheecky.clickgui", Compat.KEYBOARD, InputConstants.KEY_RSHIFT, category));
 
 		Config.load();
 

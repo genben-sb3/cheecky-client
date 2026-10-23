@@ -2,6 +2,7 @@ package dev.cheecky.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
+import dev.cheecky.compat.Compat;
 import dev.cheecky.module.Module;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -41,7 +42,7 @@ public class KeybindComponent extends GuiComponent {
 	private static String keyName(int key) {
 		if (key == 0)
 			return "keine";
-		return InputConstants.Type.KEYBOARD.getOrCreate(key).getDisplayName().getString();
+		return Compat.KEYBOARD.getOrCreate(key).getDisplayName().getString();
 	}
 
 	@Override

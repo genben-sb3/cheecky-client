@@ -1,13 +1,12 @@
 package dev.cheecky.modules;
 
+import dev.cheecky.compat.Compat;
 import dev.cheecky.module.Category;
 import dev.cheecky.module.Module;
 import dev.cheecky.setting.CheckboxSetting;
 import dev.cheecky.setting.SliderSetting;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.game.ServerboundPunchPacket;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
@@ -41,8 +40,7 @@ public class KillAura extends Module {
 			return;
 
 		mc.gameMode.attack(player, target);
-		player.swing(InteractionHand.MAIN_HAND, player.getMainHandItem().getAttackAnimation(), false);
-		player.connection.send(ServerboundPunchPacket.INSTANCE);
+		Compat.swingAfterAttack(player);
 	}
 
 	private LivingEntity findTarget(LocalPlayer player) {

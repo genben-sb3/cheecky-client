@@ -1,6 +1,6 @@
 # Cheecky Client
 
-Fabric-Client-Mod für Minecraft 26.3 mit Wurst-artigem ClickGUI. Nur für Singleplayer und Server, die so etwas erlauben.
+Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGUI. Für jede Version gibt es eine eigene Datei: `cheecky-mc26.3-….jar` bzw. `cheecky-mc26.2-….jar`. Nur für Singleplayer und Server, die so etwas erlauben.
 
 ## Module
 
@@ -48,15 +48,15 @@ Braucht Java 25 (hier installiert unter `~/.local/share/jdks/jdk-25.0.5+8`):
 
 ```fish
 set -x JAVA_HOME ~/.local/share/jdks/jdk-25.0.5+8
-./gradlew build        # Ergebnis: build/libs/cheecky-<version>.jar
+./build-all.sh         # baut für 26.3 und 26.2 nach build/libs/
 ./gradlew runClient    # Testclient starten
 ```
 
 ## In CurseForge benutzen
 
-1. **Create Custom Profile** → Minecraft **26.3**, Loader **Fabric**.
+1. **Create Custom Profile** → Minecraft **26.3** (oder **26.2**, z. B. für 6b6t), Loader **Fabric**.
 2. Im Profil **Fabric API** hinzufügen.
-3. **Open Folder** → die `cheecky-<version>.jar` aus den [Releases](https://github.com/genben-sb3/cheecky-client/releases) in den Ordner `mods/` kopieren.
+3. **Open Folder** → die passende `cheecky-mc<minecraft-version>-<version>.jar` aus den [Releases](https://github.com/genben-sb3/cheecky-client/releases) in den Ordner `mods/` kopieren.
 
 ## Materialien sammeln mit Baritone
 
@@ -67,6 +67,8 @@ Für automatisches Laufen und Abbauen gibt es **Baritone** als eigenen Mod:
 3. Im Spiel: `#mine diamond_ore`, `#tunnel`, `#goto x y z`, `#farm`, `#stop`.
 
 ## Bekannte Grenzen
+
+- **6b6t** läuft auf 26.2 und verlangt zusätzlich **AnarchyMod**. Ob Cheecky und AnarchyMod zusammen laufen, ist noch nicht getestet.
 
 - X-Ray funktioniert nicht zusammen mit **Sodium**, dafür bräuchte es eigene Mixins.
 - Keine Anti-Cheat-Umgehung. Auf Servern mit Anti-Cheat fallen KillAura, Flight, NoFall usw. auf.
