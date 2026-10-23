@@ -19,6 +19,11 @@ public class ModuleButton extends GuiComponent {
 	}
 
 	@Override
+	public boolean isVisible() {
+		return ClickGui.INSTANCE.matchesSearch(module);
+	}
+
+	@Override
 	public int getPreferredWidth() {
 		return font().width(module.name) + ARROW_WIDTH + 6;
 	}

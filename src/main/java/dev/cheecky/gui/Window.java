@@ -39,6 +39,15 @@ public class Window {
 		components.add(component);
 	}
 
+	/** Elemente, die zur aktuellen Navigator-Suche passen. */
+	private List<GuiComponent> visibleComponents() {
+		return components.stream().filter(GuiComponent::isVisible).toList();
+	}
+
+	public boolean hasVisibleComponents() {
+		return components.stream().anyMatch(GuiComponent::isVisible);
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -47,7 +56,7 @@ public class Window {
 		if (minimized)
 			return TITLE_HEIGHT;
 		int height = TITLE_HEIGHT + PADDING;
-		for (GuiComponent c : components)
+		for (GuiComponent c : visibleComponents())
 			height += c.getHeight() + PADDING;
 		return height;
 	}
@@ -56,11 +65,11 @@ public class Window {
 	public void layout() {
 		int buttons = closable ? 2 : 1;
 		width = font().width(title) + buttons * (BUTTON_SIZE + 1) + 6;
-		for (GuiComponent c : components)
+		for (GuiComponent c : visibleComponents())
 			width = Math.max(width, c.getPreferredWidth() + 2 * PADDING);
 
 		int cy = y + TITLE_HEIGHT + PADDING;
-		for (GuiComponent c : components) {
+		for (GuiComponent c : visibleComponents()) {
 			c.x = x + PADDING;
 			c.y = cy;
 			c.width = width - 2 * PADDING;
@@ -92,7 +101,7 @@ public class Window {
 		// Fensterinhalt
 		if (!minimized) {
 			g.fill(x, titleY2, x2, y2, Theme.withAlpha(Theme.BACKGROUND, Theme.OPACITY));
-			for (GuiComponent c : components)
+			for (GuiComponent c : visibleComponents())
 				c.render(g, mouseX, mouseY);
 		}
 
@@ -133,7 +142,7 @@ public class Window {
 
 		if (minimized)
 			return false;
-		for (GuiComponent c : components)
+		for (GuiComponent c : visibleComponents())
 			if (c.isHovering(mouseX, mouseY)) {
 				pressed = c;
 				c.mouseClicked(mouseX, mouseY, button);
@@ -160,7 +169,7 @@ public class Window {
 	public GuiComponent getHoveredComponent(double mouseX, double mouseY) {
 		if (minimized)
 			return null;
-		for (GuiComponent c : components)
+		for (GuiComponent c : visibleComponents())
 			if (c.isHovering(mouseX, mouseY))
 				return c;
 		return null;

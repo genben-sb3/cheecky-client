@@ -17,6 +17,11 @@ public abstract class GuiComponent {
 
 	public abstract int getHeight();
 
+	/** Ausgeblendet, wenn es nicht zur Navigator-Suche passt. */
+	public boolean isVisible() {
+		return true;
+	}
+
 	public abstract int getPreferredWidth();
 
 	public abstract void render(GuiGraphicsExtractor g, int mouseX, int mouseY);

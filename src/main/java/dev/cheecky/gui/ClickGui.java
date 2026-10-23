@@ -9,11 +9,13 @@ import dev.cheecky.module.Category;
 import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
 import dev.cheecky.setting.CheckboxSetting;
+import dev.cheecky.setting.ModeSetting;
 import dev.cheecky.setting.Setting;
 import dev.cheecky.setting.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.util.Util;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -31,6 +33,8 @@ public final class ClickGui {
 	private final List<Window> windows = new ArrayList<>();
 	private final Map<Module, Window> settingsWindows = new HashMap<>();
 	private KeybindComponent listeningKeybind;
+	/** Text der Navigator-Suche, leer = alles anzeigen. */
+	private String search = "";
 
 	private ClickGui() {
 		// Feste Abstände statt gemessener Breite: beim Laden der Mod gibt es noch keine Schrift
@@ -68,6 +72,8 @@ public final class ClickGui {
 				window.add(new SliderComponent(slider));
 			else if (setting instanceof CheckboxSetting checkbox)
 				window.add(new CheckboxComponent(checkbox));
+			else if (setting instanceof ModeSetting<?> mode)
+				window.add(new ModeComponent(mode));
 		}
 		window.add(new KeybindComponent(module));
 		window.x = button.x + button.width + 5;
@@ -92,14 +98,54 @@ public final class ClickGui {
 		return true;
 	}
 
+	public String getSearch() {
+		return search;
+	}
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public boolean matchesSearch(Module module) {
+		return module.name.toLowerCase().contains(search.toLowerCase());
+	}
+
+	/**
+	 * Kategorie-Fenster ohne passende Module ausblenden (leere Kategorien und bei der Suche).
+	 * Einstellungsfenster bleiben immer sichtbar.
+	 */
+	private boolean isShown(Window window) {
+		return window.closable || window.hasVisibleComponents();
+	}
+
 	public void render(GuiGraphicsExtractor g, int mouseX, int mouseY) {
 		for (Window window : windows) {
+			if (!isShown(window))
+				continue;
 			window.layout();
 			// Jedes Fenster auf eine eigene Ebene, damit überlappende Fenster richtig liegen
 			g.nextStratum();
 			window.render(g, mouseX, mouseY);
 		}
+		renderSearchBar(g);
 		renderTooltip(g, mouseX, mouseY);
+	}
+
+	/** Navigator: Suchleiste unten in der Mitte. Einfach lostippen. */
+	private void renderSearchBar(GuiGraphicsExtractor g) {
+		Font font = Minecraft.getInstance().font;
+		boolean empty = search.isEmpty();
+		boolean cursorOn = Util.getMillis() / 500 % 2 == 0;
+		String text = empty ? "Tippen zum Suchen..." : search + (cursorOn ? "_" : "");
+
+		int width = Math.max(120, font.width(text) + 8);
+		int x1 = (g.guiWidth() - width) / 2;
+		int y1 = g.guiHeight() - 20;
+
+		g.nextStratum();
+		g.fill(x1, y1, x1 + width, y1 + 13, Theme.withAlpha(Theme.BACKGROUND, 0.8F));
+		g.outline(x1, y1, width, 13, Theme.outline());
+		g.text(font, text, x1 + 4, y1 + 3, empty ? 0xFFA0A0A0 : Theme.TEXT, false);
 	}
 
 	private void renderTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
@@ -133,7 +179,7 @@ public final class ClickGui {
 
 	private Window getWindowAt(double mouseX, double mouseY) {
 		for (int i = windows.size() - 1; i >= 0; i--)
-			if (windows.get(i).isHovering(mouseX, mouseY))
+			if (isShown(windows.get(i)) && windows.get(i).isHovering(mouseX, mouseY))
 				return windows.get(i);
 		return null;
 	}

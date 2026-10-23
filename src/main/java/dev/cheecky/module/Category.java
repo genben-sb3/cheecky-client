@@ -3,7 +3,9 @@ package dev.cheecky.module;
 public enum Category {
 	COMBAT("Combat"),
 	MOVEMENT("Movement"),
-	RENDER("Render");
+	RENDER("Render"),
+	WORLD("World"),
+	PLAYER("Player");
 
 	public final String displayName;
 
