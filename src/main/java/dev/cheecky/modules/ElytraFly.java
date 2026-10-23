@@ -11,6 +11,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -33,11 +35,22 @@ public class ElytraFly extends Module {
 	private final SliderSetting minDurability = add(new SliderSetting("Haltbarkeit",
 		"Ab so wenig restlicher Haltbarkeit wird gewechselt.", 10, 2, 50, 1, ""));
 
+	private final CheckboxSetting crashGuard = add(new CheckboxSetting("Crash-Schutz",
+		"Erkennt Wände voraus und bremst rechtzeitig, indem du die Nase hochnimmst. Vanilla-Schaden entsteht nur, wenn beim Aufprall mehr als 0,3 Blöcke/Tick Tempo verloren gehen.", true));
+
+	/** Unter diesem waagerechten Tempo macht ein Aufprall keinen Schaden: Schaden = Tempoverlust × 10 − 3. */
+	private static final double SAFE_IMPACT_SPEED = 0.3;
+	/** So viele Ticks voraus wird nach Wänden gesucht. */
+	private static final int LOOKAHEAD_TICKS = 15;
+	/** Steigt man schneller, wird nicht weiter hochgezogen (6b6t erlaubt höchstens 3,0 Blöcke/Tick nach oben). */
+	private static final double MAX_CLIMB = 2.0;
+
 	private int fireworkCooldown;
+	private boolean braking;
 	private int swapCooldown;
 
 	public ElytraFly() {
-		super("ElytraFly", "Einfacher Elytra-Start, automatische Raketen, Stopp im Wasser und Ersatz-Elytra. Echte Elytra-Physik.",
+		super("ElytraFly", "Einfacher Elytra-Start, automatische Raketen, Crash-Schutz, Stopp im Wasser und Ersatz-Elytra. Echte Elytra-Physik.",
 			Category.MOVEMENT, 0);
 	}
 
@@ -57,13 +70,39 @@ public class ElytraFly extends Module {
 			if (stopInWater.isChecked() && player.isInWater()) {
 				// Derselbe Befehl wie beim Öffnen: der Server schließt die Elytra, wenn sie schon offen ist
 				sendStartFallFlying(player);
-			} else if (autoFirework.isChecked()) {
-				useFireworkIfSlow(player);
+			} else {
+				braking = crashGuard.isChecked() && brakeBeforeWall(player);
+				// Beim Bremsen keine Rakete zünden, sonst gibt es wieder Tempo
+				if (autoFirework.isChecked() && !braking)
+					useFireworkIfSlow(player);
 			}
 		} else if (easyStart.isChecked() && jumpDown && !player.onGround() && player.getDeltaMovement().y < 0
 			&& !player.isInWater() && player.tryToStartFallFlying()) {
 			sendStartFallFlying(player);
 		}
+	}
+
+	/**
+	 * Liegt eine Wand auf der Flugbahn und ist man zu schnell für einen schadlosen Aufprall, wird
+	 * die Nase hochgenommen: Das wandelt waagerechtes Tempo in Höhe um, wie beim Bremsen von Hand.
+	 */
+	private boolean brakeBeforeWall(LocalPlayer player) {
+		Vec3 motion = player.getDeltaMovement();
+		double horizontal = motion.horizontalDistance();
+		if (horizontal <= SAFE_IMPACT_SPEED)
+			return false;
+
+		Vec3 start = player.position().add(0, 0.4, 0);
+		Vec3 end = start.add(motion.x * LOOKAHEAD_TICKS, motion.y * LOOKAHEAD_TICKS, motion.z * LOOKAHEAD_TICKS);
+		HitResult hit = mc.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+		if (hit.getType() == HitResult.Type.MISS)
+			return false;
+
+		// Wie stark hochziehen hängt davon ab, wie nah die Wand ist
+		double ticksToWall = hit.getLocation().distanceTo(start) / Math.max(motion.length(), 0.01);
+		float pitch = ticksToWall < 5 ? -60 : -35;
+		player.setXRot(motion.y > MAX_CLIMB ? 0 : pitch);
+		return true;
 	}
 
 	private static void sendStartFallFlying(LocalPlayer player) {

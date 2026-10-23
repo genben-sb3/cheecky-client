@@ -7,6 +7,7 @@ import dev.cheecky.modules.AutoAnchor;
 import dev.cheecky.modules.AutoArmor;
 import dev.cheecky.modules.Autopilot;
 import dev.cheecky.modules.AutoCrystal;
+import dev.cheecky.modules.AutoMilk;
 import dev.cheecky.modules.AutoMine;
 import dev.cheecky.modules.AutoSprint;
 import dev.cheecky.modules.AutoTool;
@@ -51,6 +52,7 @@ public final class Modules {
 	public static final PearlAim PEARL_AIM = new PearlAim();
 	public static final Autopilot AUTOPILOT = new Autopilot();
 	public static final Coordinates COORDINATES = new Coordinates();
+	public static final AutoMilk AUTO_MILK = new AutoMilk();
 	public static final AutoMine AUTO_MINE = new AutoMine();
 	public static final AutoTool AUTO_TOOL = new AutoTool();
 	public static final AutoTotem AUTO_TOTEM = new AutoTotem();
@@ -67,7 +69,7 @@ public final class Modules {
 
 	/** Alphabetisch, so erscheinen sie in ClickGUI und Hack-Liste. */
 	public static final List<Module> ALL = List.of(
-		ANTI_KNOCKBACK, AUTO_ANCHOR, AUTO_ARMOR, AUTO_CRYSTAL, AUTO_MINE, AUTO_SPRINT, AUTO_TOOL, AUTO_TOTEM, AUTOPILOT,
+		ANTI_KNOCKBACK, AUTO_ANCHOR, AUTO_ARMOR, AUTO_CRYSTAL, AUTO_MILK, AUTO_MINE, AUTO_SPRINT, AUTO_TOOL, AUTO_TOTEM, AUTOPILOT,
 		BLOCK_FINDER, BUNNY_HOP, COORDINATES, CRITICALS,
 		ELYTRA_FLY, ENTITY_RADAR, FAST_BREAK, FLIGHT, FREECAM, FULLBRIGHT, JESUS, KILL_AURA, NO_FALL, NO_SLOW,
 		PEARL_AIM, SPEED, SPIDER,

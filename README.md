@@ -17,7 +17,7 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Combat | AutoCrystal | – | End-Kristalle neben Gegner setzen und zünden, rechnet Rüstung und Eigenschaden mit (≥ 100 ms) |
 | Combat | AntiKnockback | – | Kein Rückstoß durch Treffer und Explosionen |
 | Movement | Flight ⚠️ | G | Fliegen wie im Kreativmodus, mit Anti-Kick gegen den Vanilla-Kick |
-| Movement | ElytraFly | – | Einfacher Start, AutoFirework, Stopp im Wasser, Ersatz-Elytra |
+| Movement | ElytraFly | – | Einfacher Start, AutoFirework, Crash-Schutz (bremst vor Wänden), Stopp im Wasser, Ersatz-Elytra |
 | Movement | Speed ⚠️ | – | Schneller laufen (Modi Strafe/Vanilla) |
 | Movement | BunnyHop | B | Springt automatisch beim Laufen |
 | Movement | Step ⚠️ | – | Blöcke hochlaufen wie Stufen |
@@ -33,6 +33,7 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Render | Koordinaten | – | Unten rechts: Position, umgerechnete Nether-/Oberwelt-Koordinate, Blickrichtung (standardmäßig an) |
 | Render | EntityRadar | – | Markiert Endermen, Wither und optional Spieler durch Wände, meldet neue im Chat |
 | Render | BlockFinder | – | Markiert Holz, Erze oder eigene Blöcke mit Box und Linie, `.finder goto` lässt Baritone hinlaufen |
+| Player | AutoMilk | – | Trinkt Milch aus der Hotbar bei Wither-Effekt (optional Gift), lässt Feuerresistenz in Ruhe |
 | Player | PearlAim | – | Zielt die Enderperle automatisch auf eine mit `.pearl` festgelegte Stelle, zeigt die Flugbahn |
 | World | AutoTool | – | Bestes Werkzeug, Behutsamkeit für Glas/Eis usw., Warnung wenn nichts droppt |
 | World | FastBreak | – | Keine Pause zwischen Blöcken, optional schnellerer Abbau |
