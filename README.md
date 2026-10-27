@@ -38,6 +38,7 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | World | AutoTool | – | Bestes Werkzeug, Behutsamkeit für Glas/Eis usw., Warnung wenn nichts droppt |
 | World | FastBreak | – | Keine Pause zwischen Blöcken, optional schnellerer Abbau |
 | World | AutoMine | – | Lässt Baritone Holz oder Erze abbauen (Baritone nötig, siehe unten) |
+| World | Sammler | – | Baritone arbeitet die `.sammle`-Liste allein ab, isst selbst, loggt bei Gefahr (wenig Leben, fremder Spieler) und am Ende aus |
 
 Jedes Modul hat im ClickGUI eine Beschreibung (Maus drüberhalten) und eigene Einstellungen.
 
@@ -70,6 +71,7 @@ Beginnen mit `.` und gehen **nie** an den Server. Antworten erscheinen nur bei d
 | `.finder goto` | Baritone läuft zum nächsten Fund |
 | `.home add Base` / `.home add Stash 120000 -5000` / `.home list` / `.home remove Base` | Merkt sich, wo deine /home-Punkte liegen |
 | `.home nearest 250000 0` | Welcher Home liegt am nächsten an diesem Ziel (Oberwelt-Koordinaten)? |
+| `.sammle sand 256` / `.sammle list` / `.sammle remove sand` / `.sammle clear` / `.sammle stop` | Sammelliste für den Sammler: sand, bruchstein, redstone, eisen, gold, kohle, diamant, lapis, quarz, schrott, magma, obsidian oder eine Block-ID. Startet sofort |
 | `.pearl 100 64 -200` / `.pearl here` / `.pearl clear` (kurz `.p`) | Ziel für PearlAim: Koordinaten, Block im Fadenkreuz (bis 256 Blöcke) oder löschen |
 
 Modulnamen sind egal bei Groß-/Kleinschreibung und Bindestrichen: `xray` findet `X-Ray`.

@@ -3,6 +3,7 @@ package dev.cheecky.command;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -17,6 +18,7 @@ import dev.cheecky.setting.CheckboxSetting;
 import dev.cheecky.setting.ModeSetting;
 import dev.cheecky.setting.Setting;
 import dev.cheecky.modules.BlockFinder;
+import dev.cheecky.modules.Gatherer;
 import dev.cheecky.modules.PearlAim;
 import dev.cheecky.setting.SliderSetting;
 import dev.cheecky.util.BaritoneBridge;
@@ -27,6 +29,7 @@ import dev.cheecky.util.Friends;
 import dev.cheecky.util.Homes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
@@ -61,6 +64,7 @@ public final class Commands {
 			case "finder" -> finder(rest);
 			case "pearl", "p" -> pearl(rest);
 			case "home", "homes" -> home(rest);
+			case "sammle", "gather" -> gather(rest);
 			default -> ChatOutput.error("Unbekannter Befehl \"" + name + "\". Alle Befehle: .help");
 		}
 		return true;
@@ -78,6 +82,89 @@ public final class Commands {
 		ChatOutput.info(".finder – BlockFinder-Funde, .finder add|remove <block>, .finder list, .finder goto");
 		ChatOutput.info(".pearl <x> <y> <z> / .pearl here / .pearl clear – Ziel für PearlAim (kurz: .p)");
 		ChatOutput.info(".home add <name> [x z] / .home remove <name> / .home list / .home nearest <x> <z> – deine /home-Punkte");
+		ChatOutput.info(".sammle <was> <menge> / .sammle list|remove <was>|clear|stop – Baritone sammelt allein (Modul Sammler)");
+	}
+
+	/** Was man mit .sammle bestellen kann, außer einzelnen Blöcken per ID. */
+	private static Gatherer.Order preset(String name, int amount) {
+		return switch (name) {
+			case "sand" -> new Gatherer.Order("Sand", Items.SAND, Set.of(Blocks.SAND), amount);
+			case "bruchstein", "cobblestone", "cobble", "stein", "stone" ->
+				new Gatherer.Order("Bruchstein", Items.COBBLESTONE, Set.of(Blocks.STONE, Blocks.COBBLESTONE), amount);
+			case "redstone" -> new Gatherer.Order("Redstone", Items.REDSTONE, BlockTarget.REDSTONE.blocks(), amount);
+			case "eisen", "iron" -> new Gatherer.Order("Roheisen", Items.RAW_IRON, BlockTarget.IRON.blocks(), amount);
+			case "gold" -> new Gatherer.Order("Rohgold", Items.RAW_GOLD, Set.of(Blocks.GOLD_ORE, Blocks.DEEPSLATE_GOLD_ORE), amount);
+			case "kohle", "coal" -> new Gatherer.Order("Kohle", Items.COAL, BlockTarget.COAL.blocks(), amount);
+			case "diamant", "diamanten", "diamond" -> new Gatherer.Order("Diamanten", Items.DIAMOND, BlockTarget.DIAMOND.blocks(), amount);
+			case "lapis" -> new Gatherer.Order("Lapis", Items.LAPIS_LAZULI, BlockTarget.LAPIS.blocks(), amount);
+			case "quarz", "quartz" -> new Gatherer.Order("Quarz", Items.QUARTZ, BlockTarget.QUARTZ.blocks(), amount);
+			case "schrott", "debris", "netherite" ->
+				new Gatherer.Order("Antiker Schrott", Items.ANCIENT_DEBRIS, BlockTarget.ANCIENT_DEBRIS.blocks(), amount);
+			case "magma" -> new Gatherer.Order("Magmablöcke", Items.MAGMA_BLOCK, Set.of(Blocks.MAGMA_BLOCK), amount);
+			case "obsidian" -> new Gatherer.Order("Obsidian", Items.OBSIDIAN, Set.of(Blocks.OBSIDIAN), amount);
+			default -> {
+				Block block = CustomBlocks.parse(name).orElse(null);
+				if (block == null || block.asItem() == Items.AIR)
+					yield null;
+				yield new Gatherer.Order(CustomBlocks.name(block), block.asItem(), Set.of(block), amount);
+			}
+		};
+	}
+
+	private static void gather(String[] args) {
+		Gatherer gatherer = Modules.GATHERER;
+		String action = args.length == 0 ? "list" : args[0].toLowerCase(Locale.ROOT);
+		switch (action) {
+			case "list" -> {
+				if (gatherer.getOrders().isEmpty()) {
+					ChatOutput.info("Die Sammelliste ist leer. Eintragen mit .sammle <was> <menge>, z. B. .sammle sand 256");
+					return;
+				}
+				ChatOutput.info("Sammelliste (" + (gatherer.isEnabled() ? "läuft" : "aus") + "):");
+				for (Gatherer.Order order : gatherer.getOrders())
+					ChatOutput.info(order.name() + ": " + gatherer.count(order.item()) + "/" + order.amount());
+			}
+			case "clear" -> {
+				gatherer.setEnabled(false);
+				gatherer.clearOrders();
+				ChatOutput.info("Sammelliste geleert.");
+			}
+			case "stop" -> {
+				gatherer.setEnabled(false);
+				ChatOutput.info("Sammler gestoppt. Die Liste bleibt, weiter mit .t sammler");
+			}
+			case "remove", "del" -> {
+				Gatherer.Order order = args.length < 2 ? null : preset(args[1].toLowerCase(Locale.ROOT), 0);
+				if (order == null) {
+					ChatOutput.error("Benutzung: .sammle remove <was>");
+					return;
+				}
+				ChatOutput.info(gatherer.removeOrder(order.item()) ? order.name() + " entfernt." : order.name() + " war nicht in der Liste.");
+			}
+			default -> {
+				String what = action;
+				if (Set.of("schwarzpulver", "gunpowder", "perlen", "perle", "enderperlen", "ender_pearl", "windkugeln", "wind_charge",
+					"breeze_rod", "tnt").contains(what)) {
+					ChatOutput.error("Das kann man nicht abbauen, das droppen nur Mobs (TNT braucht Schwarzpulver). Baritone sammelt nur Blöcke.");
+					return;
+				}
+				int amount;
+				try {
+					amount = args.length < 2 ? 64 : Integer.parseInt(args[1]);
+				} catch (NumberFormatException e) {
+					ChatOutput.error("Benutzung: .sammle <was> <menge>, z. B. .sammle sand 256");
+					return;
+				}
+				Gatherer.Order order = preset(what, Math.max(1, amount));
+				if (order == null) {
+					ChatOutput.error("Unbekannt: \"" + what + "\". Möglich: sand, bruchstein, redstone, eisen, gold, kohle, diamant, lapis, quarz, schrott, magma, obsidian oder eine Block-ID.");
+					return;
+				}
+				gatherer.addOrder(order);
+				ChatOutput.info(order.name() + ": " + order.amount() + " eingetragen (" + gatherer.count(order.item()) + " schon da).");
+				gatherer.setEnabled(true);
+			}
+		}
 	}
 
 	private static void home(String[] args) {
