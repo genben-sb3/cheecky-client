@@ -65,6 +65,7 @@ public final class Commands {
 			case "pearl", "p" -> pearl(rest);
 			case "home", "homes" -> home(rest);
 			case "sammle", "gather" -> gather(rest);
+			case "route", "r" -> route(rest);
 			default -> ChatOutput.error("Unbekannter Befehl \"" + name + "\". Alle Befehle: .help");
 		}
 		return true;
@@ -82,7 +83,28 @@ public final class Commands {
 		ChatOutput.info(".finder – BlockFinder-Funde, .finder add|remove <block>, .finder list, .finder goto");
 		ChatOutput.info(".pearl <x> <y> <z> / .pearl here / .pearl clear – Ziel für PearlAim (kurz: .p)");
 		ChatOutput.info(".home add <name> [x z] / .home remove <name> / .home list / .home nearest <x> <z> – deine /home-Punkte");
+		ChatOutput.info(".route <x> <z> – schnellster Weg zu diesem Ziel (Oberwelt), .route off – ausblenden");
 		ChatOutput.info(".sammle <was> <menge> / .sammle list|remove <was>|clear|stop – Baritone sammelt allein (Modul Sammler)");
+	}
+
+	private static void route(String[] args) {
+		if (args.length == 1 && Set.of("off", "aus", "stop").contains(args[0].toLowerCase(Locale.ROOT))) {
+			Modules.ROUTE.setEnabled(false);
+			return;
+		}
+		if (args.length != 2) {
+			ChatOutput.error("Benutzung: .route <x> <z> (Oberwelt-Koordinaten des Ziels) oder .route off");
+			return;
+		}
+		try {
+			Modules.ROUTE.setTarget(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+		} catch (NumberFormatException e) {
+			ChatOutput.error("Koordinaten müssen ganze Zahlen sein.");
+			return;
+		}
+		// Neu einschalten, damit die Übersicht im Chat auch bei einem neuen Ziel kommt
+		Modules.ROUTE.setEnabled(false);
+		Modules.ROUTE.setEnabled(true);
 	}
 
 	/** Was man mit .sammle bestellen kann, außer einzelnen Blöcken per ID. */

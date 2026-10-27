@@ -1,9 +1,13 @@
 package dev.cheecky.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.cheecky.Cheecky;
 import dev.cheecky.module.Module;
 import dev.cheecky.module.Modules;
 import dev.cheecky.modules.Autopilot;
+import dev.cheecky.modules.RoutePlanner;
 import dev.cheecky.util.Coords;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.minecraft.SharedConstants;
@@ -21,6 +25,7 @@ public class Hud implements HudElement {
 	private static final int VERSION_COLOR = 0xFF000000;
 	private static final int LIST_COLOR = 0xFFFFFFFF;
 	private static final int WARNING_COLOR = 0xFFFF5555;
+	private static final int ROUTE_COLOR = 0xFF55FFFF;
 
 	private final String version = "v" + FabricLoader.getInstance().getModContainer(Cheecky.MOD_ID)
 		.map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("?")
@@ -47,12 +52,39 @@ public class Hud implements HudElement {
 
 		if (Modules.COORDINATES.isEnabled())
 			drawCoordinates(g, mc, font);
+		if (Modules.ROUTE.isEnabled())
+			drawRoute(g, mc, font, Modules.COORDINATES.isEnabled() ? 3 : 0);
 
 		int y = 22;
 		for (Module module : Modules.ALL) {
 			if (!module.isEnabled())
 				continue;
 			g.text(font, module.name, 2, y, LIST_COLOR, true);
+			y += font.lineHeight;
+		}
+	}
+
+	/** Rechts unten über den Koordinaten: schnellster Weg, nächster Schritt, Entfernung und Drehrichtung dorthin. */
+	private static void drawRoute(GuiGraphicsExtractor g, Minecraft mc, Font font, int linesBelow) {
+		RoutePlanner planner = Modules.ROUTE;
+		RoutePlanner.Step step = planner.currentStep();
+		if (mc.player == null || step == null)
+			return;
+		RoutePlanner.Route best = planner.getRoutes().getFirst();
+		List<String> lines = new ArrayList<>();
+		lines.add("Ziel " + planner.getTargetX() + " " + planner.getTargetZ() + ": " + best.name() + ", ca. " + RoutePlanner.formatTime(best.seconds()));
+		lines.add("Jetzt: " + step.text());
+		if (step.hasTarget() && step.nether() == Coords.inNether()) {
+			long distance = Math.round(Math.hypot(step.x() + 0.5 - mc.player.getX(), step.z() + 0.5 - mc.player.getZ()));
+			float turn = planner.turnTo(step);
+			String direction = Math.abs(turn) < 10 ? "geradeaus"
+				: turn > 0 ? Math.round(turn) + "° rechts →" : "← " + Math.round(-turn) + "° links";
+			lines.add(distance + " Blöcke, " + direction);
+		}
+
+		int y = g.guiHeight() - 2 - (linesBelow + lines.size()) * font.lineHeight - (linesBelow > 0 ? 4 : 0);
+		for (String line : lines) {
+			g.text(font, line, g.guiWidth() - 2 - font.width(line), y, ROUTE_COLOR, true);
 			y += font.lineHeight;
 		}
 	}

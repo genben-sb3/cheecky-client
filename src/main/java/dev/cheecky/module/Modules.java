@@ -28,6 +28,7 @@ import dev.cheecky.modules.KillAura;
 import dev.cheecky.modules.NoFall;
 import dev.cheecky.modules.NoSlow;
 import dev.cheecky.modules.PearlAim;
+import dev.cheecky.modules.RoutePlanner;
 import dev.cheecky.modules.Speed;
 import dev.cheecky.modules.Spider;
 import dev.cheecky.modules.Step;
@@ -41,6 +42,7 @@ public final class Modules {
 	public static final AutoSprint AUTO_SPRINT = new AutoSprint();
 	public static final BunnyHop BUNNY_HOP = new BunnyHop();
 	public static final Flight FLIGHT = new Flight();
+	public static final RoutePlanner ROUTE = new RoutePlanner();
 	public static final Gatherer GATHERER = new Gatherer();
 	public static final Fullbright FULLBRIGHT = new Fullbright();
 	public static final KillAura KILL_AURA = new KillAura();
@@ -74,7 +76,7 @@ public final class Modules {
 		ANTI_KNOCKBACK, AUTO_ANCHOR, AUTO_ARMOR, AUTO_CRYSTAL, AUTO_MILK, AUTO_MINE, AUTO_SPRINT, AUTO_TOOL, AUTO_TOTEM, AUTOPILOT,
 		BLOCK_FINDER, BUNNY_HOP, COORDINATES, CRITICALS,
 		ELYTRA_FLY, ENTITY_RADAR, FAST_BREAK, FLIGHT, FREECAM, FULLBRIGHT, JESUS, KILL_AURA, NO_FALL, NO_SLOW,
-		PEARL_AIM, GATHERER, SPEED, SPIDER,
+		PEARL_AIM, ROUTE, GATHERER, SPEED, SPIDER,
 		STEP, TRIGGER_BOT, XRAY);
 
 	private Modules() {}

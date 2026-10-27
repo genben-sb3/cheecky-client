@@ -32,6 +32,7 @@ Fabric-Client-Mod für Minecraft **26.3** und **26.2** mit Wurst-artigem ClickGU
 | Render | Fullbright | – | Alles taghell |
 | Render | Koordinaten | – | Unten rechts: Position, umgerechnete Nether-/Oberwelt-Koordinate, Blickrichtung (standardmäßig an) |
 | Render | EntityRadar | – | Markiert Endermen, Wither und optional Spieler durch Wände, meldet neue im Chat |
+| Render | Route | – | `.route x z`: schnellster Weg zum Ziel (zu Fuß/Elytra, Oberwelt/Nether, über gemerkte Homes), im HUD mit nächstem Schritt, Entfernung und Drehrichtung |
 | Render | BlockFinder | – | Markiert Holz, Erze oder eigene Blöcke mit Box und Linie, `.finder goto` lässt Baritone hinlaufen |
 | Player | AutoMilk | – | Trinkt Milch aus der Hotbar bei Wither-Effekt (optional Gift), lässt Feuerresistenz in Ruhe |
 | Player | PearlAim | – | Zielt die Enderperle automatisch auf eine mit `.pearl` festgelegte Stelle, zeigt die Flugbahn |
@@ -71,6 +72,7 @@ Beginnen mit `.` und gehen **nie** an den Server. Antworten erscheinen nur bei d
 | `.finder goto` | Baritone läuft zum nächsten Fund |
 | `.home add Base` / `.home add Stash 120000 -5000` / `.home list` / `.home remove Base` | Merkt sich, wo deine /home-Punkte liegen |
 | `.home nearest 250000 0` | Welcher Home liegt am nächsten an diesem Ziel (Oberwelt-Koordinaten)? |
+| `.route 250000 -3000` / `.route off` (kurz `.r`) | Routenplaner: vergleicht alle Wege zum Ziel (Oberwelt-Koordinaten) und zeigt den schnellsten. Zeiten sind Schätzungen, Tempo/Portal-/Home-Zeit in den Einstellungen |
 | `.sammle sand 256` / `.sammle list` / `.sammle remove sand` / `.sammle clear` / `.sammle stop` | Sammelliste für den Sammler: sand, bruchstein, redstone, eisen, gold, kohle, diamant, lapis, quarz, schrott, magma, obsidian oder eine Block-ID. Startet sofort |
 | `.pearl 100 64 -200` / `.pearl here` / `.pearl clear` (kurz `.p`) | Ziel für PearlAim: Koordinaten, Block im Fadenkreuz (bis 256 Blöcke) oder löschen |
 
