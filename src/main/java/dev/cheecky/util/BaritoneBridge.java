@@ -93,15 +93,38 @@ public final class BaritoneBridge {
 		}
 	}
 
+	/**
+	 * Fliegt Baritone gerade mit Elytra (nach {@code #elytra})? Das gilt schon, solange Baritone
+	 * noch am Boden darauf wartet, dass man abhebt.
+	 */
+	public static boolean isElytraActive() {
+		if (!isAvailable())
+			return false;
+		try {
+			Object elytra = call("baritone.api.IBaritone", primaryBaritone(), "getElytraProcess");
+			return (boolean) call("baritone.api.process.IBaritoneProcess", elytra, "isActive");
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			return false;
+		}
+	}
+
 	/** Liest eine Ja/Nein-Einstellung aus Baritones Settings, z. B. "allowBreak". Leer, wenn es sie nicht gibt. */
 	public static Optional<Boolean> getBooleanSetting(String name) {
+		return getSetting(name).filter(Boolean.class::isInstance).map(Boolean.class::cast);
+	}
+
+	/** Liest eine Zahl-Einstellung aus Baritones Settings, z. B. "elytraMinFireworksBeforeLanding". */
+	public static Optional<Integer> getIntSetting(String name) {
+		return getSetting(name).filter(Integer.class::isInstance).map(Integer.class::cast);
+	}
+
+	private static Optional<Object> getSetting(String name) {
 		if (!isAvailable())
 			return Optional.empty();
 		try {
 			Object settings = Class.forName("baritone.api.BaritoneAPI").getMethod("getSettings").invoke(null);
 			Object setting = settings.getClass().getField(name).get(settings);
-			Object value = setting.getClass().getField("value").get(setting);
-			return value instanceof Boolean b ? Optional.of(b) : Optional.empty();
+			return Optional.ofNullable(setting.getClass().getField("value").get(setting));
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			return Optional.empty();
 		}

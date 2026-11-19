@@ -99,7 +99,7 @@ public class BaritoneScreen extends Screen {
 		// Zeile 5: Elytra-Flug und Koordinatensystem der Felder
 		int row5 = top + 4 * ROW;
 		button("Elytra-Flug zu X/Z", left, row5, 196,
-			"Baritone fliegt mit Elytra und Raketen zum Ziel, gedacht für den Nether. Elytra anziehen, Raketen ins Inventar.",
+			"Baritone fliegt mit Elytra und Raketen zum Ziel, gedacht für den Nether. Cheecky zieht die Elytra an und hebt ab, du brauchst nur mehr als 5 Raketen ohne Sterne.",
 			this::elytraFlight).active = available;
 		Button[] coordsButton = new Button[1];
 		coordsButton[0] = button(coordsLabel(), left + 200, row5, 100,
@@ -208,6 +208,13 @@ public class BaritoneScreen extends Screen {
 		int[] xz = targetXZ();
 		if (xz == null)
 			return;
+		String problem = Modules.ELYTRA_FLY.prepareForBaritone();
+		if (problem != null) {
+			message = "§c" + problem;
+			return;
+		}
+		// Der Hinweistext von Baritone hält nichts auf, er kommt nur bei jedem #elytra wieder
+		BaritoneBridge.setSetting("elytraTermsAccepted", true);
 		if (Coords.on6b6t()) {
 			BaritoneBridge.setSetting("elytraNetherSeed", SIXB6T_NETHER_SEED);
 			BaritoneBridge.setSetting("elytraPredictTerrain", true);

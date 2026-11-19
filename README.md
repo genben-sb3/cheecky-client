@@ -105,7 +105,7 @@ set -x JAVA_HOME ~/.local/share/jdks/jdk-25.0.5+8
 - **Block:** z. B. `diamond_ore` oder `oak_log`, dann „Hinlaufen“ oder „Abbauen“.
 - **Erkunden**, **Farmen**, **Stopp**.
 - Schalter für Baritone-Einstellungen: Abbauen, Platzieren, Parkour, Sprinten, Inventar, Freier Blick. Baritone speichert sie selbst.
-- **Elytra-Flug zu X/Z:** Baritone fliegt mit Elytra und Raketen zum Ziel, gedacht für den Nether. Auf 6b6t trägt Cheecky den offiziellen Seed und die Gelände-Vorhersage selbst ein. Beim ersten Mal verlangt Baritone im Chat, dass du `#set elytraTermsAccepted true` eingibst.
+- **Elytra-Flug zu X/Z:** Baritone fliegt mit Elytra und Raketen zum Ziel, gedacht für den Nether. Du brauchst eine Elytra und mehr als 5 Raketen **ohne Feuerwerkssterne** irgendwo im Inventar. Cheecky zieht die Elytra an, legt Raketen in die Hotbar, schaltet ElytraFly ein und springt ab, sobald Baritone bereit ist. Während Baritone fliegt, hält sich ElytraFly sonst raus. Auf 6b6t trägt Cheecky den offiziellen Seed und die Gelände-Vorhersage selbst ein.
 - **Koords: Oberwelt/Nether:** in welchen Koordinaten du X/Y/Z einträgst. Cheecky rechnet für die Dimension, in der du bist, selbst um (÷ bzw. × 8).
 - Oben steht, was Baritone gerade tut und wie lange es noch ungefähr dauert.
 
