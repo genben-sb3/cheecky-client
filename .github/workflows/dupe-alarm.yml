@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Nur eine Testnachricht an Discord schicken"
+        type: boolean
+        default: false
 
 concurrency:
   group: dupe-alarm
@@ -29,7 +34,14 @@ jobs:
           key: dupe-alarm-state-${{ github.run_id }}
           restore-keys: dupe-alarm-state-
 
+      - name: Testnachricht
+        if: inputs.test
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python3 tools/dupe_alarm.py --test
+
       - name: Blog prüfen
+        if: ${{ !inputs.test }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python3 tools/dupe_alarm.py --state dupe-alarm-state.json

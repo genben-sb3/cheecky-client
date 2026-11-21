@@ -9,6 +9,7 @@ Beim allerersten Lauf werden alle vorhandenen Beiträge nur gemerkt, nicht gemel
 Benutzung:
   DISCORD_WEBHOOK_URL=... python3 tools/dupe_alarm.py
   python3 tools/dupe_alarm.py --dry-run     # nichts senden, nichts speichern, nur anzeigen
+  python3 tools/dupe_alarm.py --test        # nur eine Testnachricht an Discord schicken
 """
 
 import argparse
@@ -87,7 +88,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--state", default="dupe-alarm-state.json", help="Statusdatei mit bekannten Beiträgen")
     parser.add_argument("--dry-run", action="store_true", help="nichts senden, nichts speichern")
+    parser.add_argument("--test", action="store_true", help="nur eine Testnachricht an Discord schicken")
     args = parser.parse_args()
+
+    if args.test:
+        webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
+        if not webhook_url:
+            print("DISCORD_WEBHOOK_URL fehlt.", file=sys.stderr)
+            return 1
+        send_to_discord(webhook_url, {"title": "Test: Der Dupe-Alarm funktioniert.", "link": "https://blog.6b6t.org/"})
+        print("Testnachricht geschickt.")
+        return 0
 
     try:
         posts = parse_feed(fetch(FEED_URL))
