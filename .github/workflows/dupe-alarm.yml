@@ -1,0 +1,42 @@
+# Dupe-Alarm: prüft alle 15 Minuten den 6b6t-Blog und meldet neue Dupe-Beiträge in Discord.
+# Einrichtung: Repo-Secret DISCORD_WEBHOOK_URL anlegen (Settings → Secrets and variables → Actions).
+name: Dupe-Alarm
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: dupe-alarm
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Welche Beiträge schon bekannt sind, wandert von Lauf zu Lauf über den Actions-Cache
+      - name: Status laden
+        uses: actions/cache/restore@v4
+        with:
+          path: dupe-alarm-state.json
+          key: dupe-alarm-state-${{ github.run_id }}
+          restore-keys: dupe-alarm-state-
+
+      - name: Blog prüfen
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python3 tools/dupe_alarm.py --state dupe-alarm-state.json
+
+      - name: Status speichern
+        if: always() && hashFiles('dupe-alarm-state.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: dupe-alarm-state.json
+          key: dupe-alarm-state-${{ github.run_id }}
